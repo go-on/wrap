@@ -60,7 +60,12 @@ type ServeHandler interface {
 }
 
 // ServeWrapper returns a Wrapper for a ServeHandler
-func ServeWrapper(wh ServeHandler) Wrapper { return ServeHandlerFunc(wh.ServeHandle) }
+func ServeWrapper(wh ServeHandler) Wrapper {
+	fn := func(inner http.Handler, rw http.ResponseWriter, req *http.Request) {
+		wh.ServeHandle(inner, rw, req)
+	}
+	return ServeHandlerFunc(fn)
+}
 
 // ServeHandle creates a http.Handler by using the given ServeHandler
 func ServeHandle(wh ServeHandler, inner http.Handler) http.Handler {
