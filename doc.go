@@ -3,15 +3,19 @@
 // license that can be found in the LICENSE file.
 
 /*
-Package wrap creates fast and flexible middleware for http.Handlers.
+Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-It has probably the most simple implementation one could think of.
 Each middleware is a wrapper for another middleware and fullfills the
 Wrapper interface.
 
-This package is considered stable, feature complete and ready for production.
+Wrappers can be found at github.com/go-on/wrap-contrib/wraps.
 
-A lot of wrappers can be found at github.com/go-on/wrap-contrib/wraps.
+Status
+
+100% test coverage.
+This package is considered complete, stable and ready for production.
+
+Go >= 1.1 required
 
 Benchmarks:
 
@@ -26,8 +30,6 @@ Benchmarks:
 
 	BenchmarkServing100Simple     50000 33686 ns/op 1.00x
 	BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
-
-
 
 Credits
 

@@ -1,7 +1,7 @@
 wrap
 ====
 
-Package wrap creates fast and flexible middleware for http.Handlers.
+Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
 [![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap)
 
@@ -11,6 +11,24 @@ Status
 ------
 100% test coverage.
 This package is considered complete, stable and ready for production.
+
+Go >= 1.1 required
+
+Benchmarks
+----------
+
+    // The overhead of n writes to http.ResponseWriter via n wrappers
+    // vs n writes in a loop within a single http.Handler
+
+    BenchmarkServing2Simple     5000000   718 ns/op 1.00x
+    BenchmarkServing2Wrappers   2000000   824 ns/op 1.14x
+
+    BenchmarkServing50Simple     100000 17466 ns/op 1.00x
+    BenchmarkServing50Wrappers   100000 23984 ns/op 1.37x
+
+    BenchmarkServing100Simple     50000 33686 ns/op 1.00x
+    BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
+
 
 Examples
 --------
@@ -52,4 +70,9 @@ func main() {
 }
 ```
 
+
+Credits
+-------
+
+Initial inspiration came from Christian Neukirchen's rack for ruby some years ago.
 

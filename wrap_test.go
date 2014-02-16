@@ -29,17 +29,13 @@ func TestWrap(t *testing.T) {
 			write("c"),
 		),
 		"ABC": New(
-			WrapperFunc(write("A").Wrap),
+			write("A"),
 			ServeWrapper(write("B")),
 			Handler(ServeHandleFunc(write("C").ServeHandle, noop)),
 		),
 		"ab": New(
 			write("a"),
 			Handler(write("b")),
-			write("c"),
-		),
-		"not found": New(
-			HandlerFunc(write("not found").ServeHTTP),
 			write("c"),
 		),
 	}
