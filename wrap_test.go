@@ -28,11 +28,6 @@ func TestWrap(t *testing.T) {
 			write("b"),
 			write("c"),
 		),
-		"ABC": New(
-			write("A"),
-			ServeWrapper(write("B")),
-			Handler(ServeHandleFunc(write("C").ServeHandle, noop)),
-		),
 		"ab": New(
 			write("a"),
 			Handler(write("b")),
