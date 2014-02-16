@@ -3,12 +3,8 @@ package wrap
 import (
 	"fmt"
 	"net/http"
-	. "launchpad.net/gocheck"
+	"testing"
 )
-
-type wrapSuite struct{}
-
-var _ = Suite(&wrapSuite{})
 
 type write string
 
@@ -25,7 +21,7 @@ func (w write) Wrap(inner http.Handler) http.Handler {
 	return ServeHandle(w, inner)
 }
 
-func (w *wrapSuite) TestNew(c *C) {
+func TestWrap(t *testing.T) {
 	tests := map[string]http.Handler{
 		"abc": New(
 			write("a"),
@@ -51,6 +47,6 @@ func (w *wrapSuite) TestNew(c *C) {
 	for body, h := range tests {
 		rec, req := newTestRequest("GET", "/")
 		h.ServeHTTP(rec, req)
-		assertResponse(c, rec, body, 200)
+		assertResponse(t, rec, body, 200)
 	}
 }

@@ -8,13 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	. "launchpad.net/gocheck"
 )
-
-//
-// gocheck: hook into "go test"
-//
-func Test(t *testing.T) { TestingT(t) }
 
 func newTestRequest(method, path string) (*httptest.ResponseRecorder, *http.Request) {
 	request, err := http.NewRequest(method, path, nil)
@@ -26,9 +20,15 @@ func newTestRequest(method, path string) (*httptest.ResponseRecorder, *http.Requ
 	return recorder, request
 }
 
-func assertResponse(c *C, rec *httptest.ResponseRecorder, body string, code int) {
-	c.Assert(strings.TrimSpace(string(rec.Body.Bytes())), Equals, body)
-	c.Assert(rec.Code, Equals, code)
+func assertResponse(t *testing.T, rec *httptest.ResponseRecorder, body string, code int) {
+	trimmed := strings.TrimSpace(string(rec.Body.Bytes()))
+	if trimmed != body {
+		t.Errorf("body should be %#v but is %#v", body, trimmed)
+	}
+
+	if rec.Code != code {
+		t.Errorf("status code should be %d but is %d", code, rec.Code)
+	}
 }
 
 type noHTTPWriter struct{}
