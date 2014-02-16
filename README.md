@@ -12,8 +12,6 @@ Status
 100% test coverage.
 This package is considered complete, stable and ready for production.
 
-Go >= 1.1 required
-
 Benchmarks
 ----------
 
