@@ -8,6 +8,14 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 Each middleware is a wrapper for another middleware and fullfills the
 Wrapper interface.
 
+Features
+
+- small, the core is only 28 LOC including comments
+- integrates fine with net/http
+- middleware stacks may be used in middleware because they are http.Handlers
+- low memory footprint
+- fast
+
 Wrappers can be found at github.com/go-on/wrap-contrib/wraps.
 
 Status

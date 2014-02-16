@@ -7,6 +7,14 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
 [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap)
 
+Features
+
+- small, the core is only 28 LOC including comments
+- integrates fine with net/http
+- middleware stacks may be used in middleware because they are http.Handlers
+- low memory footprint
+- fast
+
 Status
 ------
 100% test coverage.
