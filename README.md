@@ -9,7 +9,7 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
 Features
 
-- small, the core is only 28 LOC including comments
+- small, the core is only 28 LOC including comments, rest are utilities
 - integrates fine with net/http
 - middleware stacks may be used in middleware because they are http.Handlers
 - low memory footprint
