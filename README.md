@@ -36,10 +36,8 @@ Benchmarks
     BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
 
 
-Examples
---------
-
-more examples, middleware and router can be found [here](https://github.com/go-on/wrap-contrib) 
+Example
+-------
 
 ```go
 package main
@@ -76,6 +74,15 @@ func main() {
 }
 ```
 
+Middleware
+----------
+
+more examples and middleware and can be found at [github.com/go-on/wrap-contrib](https://github.com/go-on/wrap-contrib) 
+
+Router
+------
+
+A router that is also tested but may change, can be found at [github.com/go-on/wrap-router](https://github.com/go-on/wrap-router)
 
 Credits
 -------
