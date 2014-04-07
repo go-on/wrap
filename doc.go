@@ -10,9 +10,9 @@ Wrapper interface.
 
 Features
 
-- small, the core is only 28 LOC including comments, rest are utilities
-- integrates fine with net/http
-- middleware stacks may be used in middleware because they are http.Handlers
+- small; core is only 28 LOC (with comments)
+- based on http.Handler interface; integrates fine with net/http
+- middleware stacks are http.Handlers too and may be embedded
 - low memory footprint
 - fast
 

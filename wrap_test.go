@@ -12,13 +12,13 @@ func (w write) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
 	fmt.Fprint(wr, string(w))
 }
 
-func (w write) ServeHandle(inner http.Handler, wr http.ResponseWriter, req *http.Request) {
+func (w write) ServeHandle(next http.Handler, wr http.ResponseWriter, req *http.Request) {
 	w.ServeHTTP(wr, req)
-	inner.ServeHTTP(wr, req)
+	next.ServeHTTP(wr, req)
 }
 
-func (w write) Wrap(inner http.Handler) http.Handler {
-	return ServeHandle(w, inner)
+func (w write) Wrap(next http.Handler) http.Handler {
+	return ServeHandle(w, next)
 }
 
 func TestWrap(t *testing.T) {
