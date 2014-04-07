@@ -9,32 +9,24 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
 Features
 
-- small, the core is only 28 LOC including comments, rest are utilities
-- integrates fine with net/http
-- middleware stacks may be used in middleware because they are http.Handlers
+- small; core is only 28 LOC (with comments)
+- based on http.Handler interface; integrates fine with net/http
+- middleware stacks are http.Handlers too and may be embedded
 - low memory footprint
 - fast
 
-Status
-------
-100% test coverage.
-This package is considered complete, stable and ready for production.
+How does it work
+----------------
 
-Benchmarks
-----------
+`wrap.New(w ...Wrapper)` creates a stack of middlewares. `Wrapper` is defined as
 
-    // The overhead of n writes to http.ResponseWriter via n wrappers
-    // vs n writes in a loop within a single http.Handler
+    type Wrapper interface {
+        Wrap(next http.Handler) (previous http.Handler)
+    }
 
-    BenchmarkServing2Simple     5000000   718 ns/op 1.00x
-    BenchmarkServing2Wrappers   2000000   824 ns/op 1.14x
-
-    BenchmarkServing50Simple     100000 17466 ns/op 1.00x
-    BenchmarkServing50Wrappers   100000 23984 ns/op 1.37x
-
-    BenchmarkServing100Simple     50000 33686 ns/op 1.00x
-    BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
-
+Each wrapper wraps the the `http.Handler` that comes further down
+the middleware stack and returns a `http.Handler` that handles the
+request previously.
 
 Example
 -------
@@ -54,17 +46,27 @@ func (p print) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
     fmt.Println(p)
 }
 
-func (p print) ServeHandle(inner http.Handler, wr http.ResponseWriter, req *http.Request) {
+// ServeHandle prints the string and calls the next handler in the chain
+func (p print) ServeHandle(next http.Handler, wr http.ResponseWriter, req *http.Request) {
     fmt.Print(p)
-    inner.ServeHTTP(wr, req)
+    next.ServeHTTP(wr, req)
 }
 
 func main() {
+
+    // creates a chain of Wrappers
     h := wrap.New(
+
+        // uses print.ServeHandle
         wrap.ServeWrapper(print("ready...")),
+
+        // uses print.ServeHandle
         wrap.ServeWrapper(print("steady...")),
+        
+        // uses print.ServeHTTP
         wrap.Handler(print("go!")),
     )
+
     r, _ := http.NewRequest("GET", "/", nil)
     h.ServeHTTP(nil, r)
 
@@ -73,6 +75,11 @@ func main() {
     //
 }
 ```
+
+Status
+------
+100% test coverage.
+This package is considered complete, stable and ready for production.
 
 Middleware
 ----------
@@ -83,6 +90,22 @@ Router
 ------
 
 A router that is also tested but may change, can be found at [github.com/go-on/wrap-router](https://github.com/go-on/wrap-router)
+
+Benchmarks
+----------
+
+    // The overhead of n writes to http.ResponseWriter via n wrappers
+    // vs n writes in a loop within a single http.Handler
+
+    BenchmarkServing2Simple     5000000   718 ns/op 1.00x
+    BenchmarkServing2Wrappers   2000000   824 ns/op 1.14x
+
+    BenchmarkServing50Simple     100000 17466 ns/op 1.00x
+    BenchmarkServing50Wrappers   100000 23984 ns/op 1.37x
+
+    BenchmarkServing100Simple     50000 33686 ns/op 1.00x
+    BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
+
 
 Credits
 -------
