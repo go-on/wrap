@@ -8,20 +8,22 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 Each middleware is a wrapper for another middleware and fullfills the
 Wrapper interface.
 
+A nice introduction into this library can be found at http://metakeule.github.io/article/wrap-go-middlware-framework.html.
+
 Features
 
-- small; core is only 28 LOC (with comments)
+- small; core is only 13 LOC
 - based on http.Handler interface; integrates fine with net/http
 - middleware stacks are http.Handlers too and may be embedded
 - low memory footprint
 - fast
 
-Wrappers can be found at github.com/go-on/wrap-contrib/wraps.
+Wrappers can be found at github.com/go-on/wrap-contrib.
 
 Status
 
 100% test coverage.
-This package is considered complete, stable and ready for production.
+This package is considered complete and the API is stable.
 
 Benchmarks:
 
