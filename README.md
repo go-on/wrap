@@ -81,7 +81,10 @@ func main() {
 Status
 ------
 100% test coverage.
-This package is considered complete, stable and ready for production.
+This package is considered feature complete, stable and ready for production.
+
+It will not change (apart from documentation improvements), since all further
+development will be middleware in the go-on/wrap-contrib repository.
 
 Middleware
 ----------
