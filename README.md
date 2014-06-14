@@ -3,9 +3,7 @@ wrap
 
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-[![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap)
-
-[![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap)
+[![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Coverage Status](https://img.shields.io/coveralls/go-on/queue.svg)](https://coveralls.io/r/go-on/queue?branch=master)
 
 Features
 
@@ -80,7 +78,6 @@ func main() {
 
 Status
 ------
-100% test coverage.
 This package is considered feature complete, stable and ready for production.
 
 It will not change (apart from documentation improvements), since all further
