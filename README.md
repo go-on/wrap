@@ -6,6 +6,7 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 [![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master)
 
 Features
+--------
 
 - small; core is only 13 LOC
 - based on http.Handler interface; integrates fine with net/http
