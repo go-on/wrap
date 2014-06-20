@@ -12,7 +12,7 @@ func TestWrapMethod(t *testing.T) {
 		"ABC": New(
 			WrapperFunc(write("A").Wrap),
 			ServeWrapper(write("B")),
-			Handler(ServeHandleFunc(write("C").ServeHandle, noop)),
+			Handler(ServeHandleFunc(write("C").ServeHandle, NoOp)),
 		),
 		"not found": New(
 			HandlerFunc(write("not found").ServeHTTP),

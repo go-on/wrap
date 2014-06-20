@@ -9,16 +9,16 @@ type Wrapper interface {
 	Wrap(next http.Handler) (previous http.Handler)
 }
 
-// noop is a http.Handler that does nothing
-var noop = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+// NoOp is a http.Handler that does nothing
+var NoOp = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
 
 // New returns a http.Handler that wraps the given wrappers.
 // When it serves the request the first given wrapper
 // serves the request and may let the second wrapper (its "next" wrapper) serve.
 // The second wrapper may let the third wrapper serve and so on.
-// The last wrapper has as "next" wrapper the not exported noop handler that does nothing.
+// The last wrapper has as "next" wrapper the not exported NoOp handler that does nothing.
 func New(wrapper ...Wrapper) (h http.Handler) {
-	h = noop
+	h = NoOp
 	for i := len(wrapper) - 1; i >= 0; i-- {
 		h = wrapper[i].Wrap(h)
 	}
