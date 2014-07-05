@@ -3,7 +3,7 @@ wrap
 
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-[![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) ![Project todo](http://img.shields.io/todo/completed.png?color=green) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master)  ![Project status](http://img.shields.io/status/stable.png?color=green)  
+[![Build Status](https://secure.travis-ci.org/go-on/wrap.png)](http://travis-ci.org/go-on/wrap) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master)  ![Project status](http://img.shields.io/status/stable.png?color=green)  
 
 Features
 --------
