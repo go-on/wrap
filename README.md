@@ -3,7 +3,7 @@ wrap
 
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-[![Build Status](http://img.shields.io/travis/go-on/wrap.svg)](http://travis-ci.org/go-on/wrap) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master) [![Project status](http://img.shields.io/status/stable.png?color=green)](#) [![Todo status](http://img.shields.io/todo/complete.png?color=green)](#) [![Tutorial](http://img.shields.io/blog/tutorial.png?color=blue)](http://metakeule.github.io/article/wrap-go-middlware-framework.html) [![Tag](http://img.shields.io/github/tag/go-on/wrap.svg)](#) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [ ![Codeship Status for go-on/router](https://codeship.io/projects/0d1e60c0-f581-0131-99d0-4eaabb67bda7/status)](https://codeship.io/projects/28327)
+[![Build Status](http://img.shields.io/travis/go-on/wrap.svg)](http://travis-ci.org/go-on/wrap) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master) [![Project status](http://img.shields.io/status/stable.png?color=green)](#) [![Todo status](http://img.shields.io/todo/complete.png?color=green)](#) [![Tutorial](http://img.shields.io/blog/tutorial.png?color=blue)](http://metakeule.github.io/article/wrap-go-middlware-framework.html) [![Tag](http://img.shields.io/github/tag/go-on/wrap.svg)](#) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) 
 
 
 
