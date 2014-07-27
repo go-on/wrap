@@ -24,3 +24,14 @@ func New(wrapper ...Wrapper) (h http.Handler) {
 	}
 	return
 }
+
+// ResponseWriterWithContext is a http.ResponseWriter that can set and get contexts
+type ResponseWriterWithContext interface {
+	http.ResponseWriter
+
+	// Context lets the given ctxPtr point to the saved context of the same type
+	Context(ctxPtr interface{})
+
+	// SetContext saves the given context pointer via type switch
+	SetContext(ctxPtr interface{})
+}
