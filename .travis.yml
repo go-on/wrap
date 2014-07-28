@@ -5,6 +5,7 @@ go:
   - 1.2
   - tip
 script:
+  - go get github.com/go-on/wrap-contrib/helper
   - go get code.google.com/p/go.tools/cmd/cover
   - go install code.google.com/p/go.tools/cmd/cover
   - go test -covermode=count -coverprofile=profile.cov
