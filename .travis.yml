@@ -5,6 +5,7 @@ go:
   - 1.2
   - tip
 script:
+  - rm -rf $GOPATH/pkg/*
   - go get -u github.com/go-on/method
   - go get -u github.com/go-on/wrap-contrib/helper
   - go get -u github.com/go-on/wrap-contrib/wraps
