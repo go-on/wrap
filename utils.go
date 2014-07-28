@@ -12,6 +12,12 @@ func (wf WrapperFunc) Wrap(next http.Handler) http.Handler { return wf(next) }
 // The returned Wrapper simply runs the given handler and ignores the
 // next handler in the stack.
 func Handler(h http.Handler) Wrapper {
+	if DEBUG {
+		return ServeHandlerFunc(
+			func(next http.Handler, rw http.ResponseWriter, req *http.Request) {
+				(&debug{h, asHandler, h}).ServeHTTP(rw, req)
+			})
+	}
 	return ServeHandlerFunc(
 		func(next http.Handler, rw http.ResponseWriter, req *http.Request) {
 			h.ServeHTTP(rw, req)
@@ -21,6 +27,12 @@ func Handler(h http.Handler) Wrapper {
 
 // HandlerFunc is like Handler but for a function with the type signature of http.HandlerFunc
 func HandlerFunc(fn func(http.ResponseWriter, *http.Request)) Wrapper {
+	if DEBUG {
+		return ServeHandlerFunc(
+			func(next http.Handler, rw http.ResponseWriter, req *http.Request) {
+				(&debug{fn, asHandlerFunc, http.HandlerFunc(fn)}).ServeHTTP(rw, req)
+			})
+	}
 	return ServeHandlerFunc(
 		func(next http.Handler, rw http.ResponseWriter, req *http.Request) {
 			fn(rw, req)

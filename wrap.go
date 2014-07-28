@@ -17,21 +17,15 @@ var NoOp = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
 // serves the request and may let the second wrapper (its "next" wrapper) serve.
 // The second wrapper may let the third wrapper serve and so on.
 // The last wrapper has as "next" wrapper the not exported NoOp handler that does nothing.
+// If DEBUG is set, each http.Handler is wrapped with a debug struct that calls DEBUGGER.Debug before
+// running the actual http.Handler.
 func New(wrapper ...Wrapper) (h http.Handler) {
+	if DEBUG {
+		return _debug(wrapper...)
+	}
 	h = NoOp
 	for i := len(wrapper) - 1; i >= 0; i-- {
 		h = wrapper[i].Wrap(h)
 	}
 	return
-}
-
-// ResponseWriterWithContext is a http.ResponseWriter that can set and get contexts
-type ResponseWriterWithContext interface {
-	http.ResponseWriter
-
-	// Context lets the given ctxPtr point to the saved context of the same type
-	Context(ctxPtr interface{})
-
-	// SetContext saves the given context pointer via type switch
-	SetContext(ctxPtr interface{})
 }
