@@ -28,7 +28,7 @@ func TestWrap(t *testing.T) {
 			write("b"),
 			write("c"),
 		),
-		"ab": New(
+		"ab": Stack(
 			write("a"),
 			Handler(write("b")),
 			write("c"),

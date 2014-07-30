@@ -292,6 +292,18 @@ func TestRWEscapeHTML(t *testing.T) {
 	}
 }
 
+func TestRWBufferContext(t *testing.T) {
+	c := &ctx{context: "hello "}
+	buf := NewRWBuffer(c)
+	// esc := &RWBuffer{c}
+
+	contextSetter(buf, nil)
+
+	if c.context != "hello world" {
+		t.Errorf(`context should be "hello world", but is: %#v`, c.context)
+	}
+}
+
 func TestResponseBufferWriteTo(t *testing.T) {
 	rec, req := NewTestRequest("GET", "/")
 	buf := NewRWBuffer(rec)

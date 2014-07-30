@@ -29,3 +29,6 @@ func New(wrapper ...Wrapper) (h http.Handler) {
 	}
 	return
 }
+
+// Stack provides an alternative name to New for . imports
+var Stack = New

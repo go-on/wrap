@@ -159,6 +159,14 @@ type RWBuffer struct {
 	header  http.Header
 }
 
+func (f *RWBuffer) Context(ctxPtr interface{}) {
+	f.ResponseWriter.(RWContext).Context(ctxPtr)
+}
+
+func (f *RWBuffer) SetContext(ctxPtr interface{}) {
+	f.ResponseWriter.(RWContext).SetContext(ctxPtr)
+}
+
 // Header returns the http.Header
 func (f *RWBuffer) Header() http.Header {
 	f.changed = true
