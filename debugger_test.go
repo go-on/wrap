@@ -1,19 +1,77 @@
-package wrap_test
+package wrap
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/go-on/wrap"
-
-	"github.com/go-on/wrap-contrib/wraps"
+	// "github.com/go-on/wrap"
 )
 
+func TestDebug(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/", nil)
+	rec := httptest.NewRecorder()
+	var buf bytes.Buffer
+	NewLogDebugger(&buf, log.Lshortfile)
+	DEBUG = true
+
+	New(
+		NextHandler(write("one")),
+		writeStop("two"),
+	).ServeHTTP(rec, req)
+
+	DEBUG = false
+
+	splitted := strings.Split(strings.TrimSpace(buf.String()), "\n")
+
+	if len(splitted) != 4 {
+		t.Errorf("expected 4 lines, got %d", len(splitted))
+	}
+
+	prefix := "[go-on/wrap debugger]"
+
+	if !strings.HasPrefix(splitted[0], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[0], prefix)
+	}
+
+	suffix := "GET / wrap.NextHandlerFunc as Wrapper"
+	if !strings.HasSuffix(splitted[0], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[0], suffix)
+	}
+
+	if !strings.HasPrefix(splitted[1], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[1], prefix)
+	}
+
+	suffix = "GET / wrap.NextHandlerFunc as NextHandlerFunc"
+	if !strings.HasSuffix(splitted[1], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[1], suffix)
+	}
+
+	if !strings.HasPrefix(splitted[2], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[2], prefix)
+	}
+
+	suffix = "GET / wrap.write as NextHandler"
+	if !strings.HasSuffix(splitted[2], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[2], suffix)
+	}
+
+	if !strings.HasPrefix(splitted[3], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[3], prefix)
+	}
+
+	suffix = "GET / wrap.writeStop as Wrapper"
+	if !strings.HasSuffix(splitted[3], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[3], suffix)
+	}
+
+}
+
+/*
 type write string
 
 func (w write) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
@@ -26,8 +84,14 @@ func (w write) ServeHandle(next http.Handler, wr http.ResponseWriter, req *http.
 }
 
 func (w write) Wrap(next http.Handler) http.Handler {
-	return wrap.ServeHandle(w, next)
+	var f http.HandlerFunc
+	f = func(wr http.ResponseWriter, req *http.Request) {
+		w.ServeHTTP(wr, req)
+		next.ServeHTTP(wr, req)
+	}
+	return f
 }
+*/
 
 func x(rw http.ResponseWriter, req *http.Request) {
 	rw.Write([]byte("x"))
@@ -37,20 +101,21 @@ func TestDebug1(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	rec := httptest.NewRecorder()
 	var buf bytes.Buffer
-	wrap.NewLogDebugger(&buf, log.Lshortfile)
-	wrap.DEBUG = true
+	NewLogDebugger(&buf, log.Lshortfile)
+	DEBUG = true
 
-	wrap.New(
-		wraps.Before(write("one")),
-		wrap.Handler(write("two")),
+	New(
+		// wraps.Before(write("one")),
+		write("one"),
+		Handler(write("two")),
 	).ServeHTTP(rec, req)
 
-	wrap.DEBUG = false
+	DEBUG = false
 
 	splitted := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
-	if len(splitted) != 3 {
-		t.Errorf("expected 3 lines, got %d", len(splitted))
+	if len(splitted) != 4 {
+		t.Errorf("expected 4 lines, got %d", len(splitted))
 	}
 
 	prefix := "[go-on/wrap debugger]"
@@ -58,8 +123,7 @@ func TestDebug1(t *testing.T) {
 	if !strings.HasPrefix(splitted[0], prefix) {
 		t.Errorf("%#v should start with %#v but does not", splitted[0], prefix)
 	}
-
-	suffix := "GET / wraps.BeforeFunc as Wrapper"
+	suffix := "GET / wrap.write as Wrapper"
 	if !strings.HasSuffix(splitted[0], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[0], suffix)
 	}
@@ -68,7 +132,7 @@ func TestDebug1(t *testing.T) {
 		t.Errorf("%#v should start with %#v but does not", splitted[1], prefix)
 	}
 
-	suffix = "GET / wrap.ServeHandlerFunc as Wrapper"
+	suffix = "GET / wrap.NextHandlerFunc as Wrapper"
 	if !strings.HasSuffix(splitted[1], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[1], suffix)
 	}
@@ -77,9 +141,18 @@ func TestDebug1(t *testing.T) {
 		t.Errorf("%#v should start with %#v but does not", splitted[2], prefix)
 	}
 
-	suffix = "GET / wrap_test.write as http.Handler"
+	suffix = "GET / wrap.NextHandlerFunc as NextHandlerFunc"
 	if !strings.HasSuffix(splitted[2], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[2], suffix)
+	}
+
+	if !strings.HasPrefix(splitted[3], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[3], prefix)
+	}
+
+	suffix = "GET / wrap.write as http.Handler"
+	if !strings.HasSuffix(splitted[3], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[3], suffix)
 	}
 
 }
@@ -88,20 +161,21 @@ func TestDebug2(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/", nil)
 	rec := httptest.NewRecorder()
 	var buf bytes.Buffer
-	wrap.NewLogDebugger(&buf, log.Lshortfile)
-	wrap.DEBUG = true
+	NewLogDebugger(&buf, log.Lshortfile)
+	DEBUG = true
 
-	wrap.New(
-		wraps.Before(write("one")),
-		wrap.HandlerFunc(x),
+	New(
+		//wraps.Before(write("one")),
+		write("one"),
+		HandlerFunc(x),
 	).ServeHTTP(rec, req)
 
-	wrap.DEBUG = false
+	DEBUG = false
 
 	splitted := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
-	if len(splitted) != 3 {
-		t.Errorf("expected 3 lines, got %d", len(splitted))
+	if len(splitted) != 4 {
+		t.Errorf("expected 4 lines, got %d", len(splitted))
 	}
 
 	prefix := "[go-on/wrap debugger]"
@@ -109,8 +183,7 @@ func TestDebug2(t *testing.T) {
 	if !strings.HasPrefix(splitted[0], prefix) {
 		t.Errorf("%#v should start with %#v but does not", splitted[0], prefix)
 	}
-
-	suffix := "GET / wraps.BeforeFunc as Wrapper"
+	suffix := "GET / wrap.write as Wrapper"
 	if !strings.HasSuffix(splitted[0], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[0], suffix)
 	}
@@ -119,7 +192,7 @@ func TestDebug2(t *testing.T) {
 		t.Errorf("%#v should start with %#v but does not", splitted[1], prefix)
 	}
 
-	suffix = "GET / wrap.ServeHandlerFunc as Wrapper"
+	suffix = "GET / wrap.NextHandlerFunc as Wrapper"
 	if !strings.HasSuffix(splitted[1], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[1], suffix)
 	}
@@ -128,9 +201,17 @@ func TestDebug2(t *testing.T) {
 		t.Errorf("%#v should start with %#v but does not", splitted[2], prefix)
 	}
 
-	suffix = "GET / func(http.ResponseWriter, *http.Request) as http.HandlerFunc"
+	suffix = "GET / wrap.NextHandlerFunc as NextHandlerFunc"
 	if !strings.HasSuffix(splitted[2], suffix) {
 		t.Errorf("%#v should end with %#v but does not", splitted[2], suffix)
 	}
 
+	if !strings.HasPrefix(splitted[3], prefix) {
+		t.Errorf("%#v should start with %#v but does not", splitted[3], prefix)
+	}
+
+	suffix = "GET / func(http.ResponseWriter, *http.Request) as http.HandlerFunc"
+	if !strings.HasSuffix(splitted[3], suffix) {
+		t.Errorf("%#v should end with %#v but does not", splitted[3], suffix)
+	}
 }

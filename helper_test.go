@@ -43,3 +43,37 @@ func (noHTTPWriter) Header() (h http.Header) {
 
 func (noHTTPWriter) WriteHeader(i int) {
 }
+
+type write string
+
+func (w write) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(wr, string(w))
+}
+
+func (w write) ServeHTTPNext(next http.Handler, wr http.ResponseWriter, req *http.Request) {
+	w.ServeHTTP(wr, req)
+	next.ServeHTTP(wr, req)
+}
+
+func (w write) Wrap(next http.Handler) http.Handler {
+	var f http.HandlerFunc
+	f = func(wr http.ResponseWriter, req *http.Request) {
+		w.ServeHTTP(wr, req)
+		next.ServeHTTP(wr, req)
+	}
+	return f
+}
+
+type writeStop string
+
+func (w writeStop) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(wr, string(w))
+}
+
+func (w writeStop) Wrap(next http.Handler) http.Handler {
+	var f http.HandlerFunc
+	f = func(wr http.ResponseWriter, req *http.Request) {
+		w.ServeHTTP(wr, req)
+	}
+	return f
+}
