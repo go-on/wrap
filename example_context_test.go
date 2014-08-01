@@ -11,14 +11,14 @@ import (
 // userIP represents the IP address of a http.Request
 type userIP net.IP
 
-// context implements Context, providing a userIP and a error
+// context implements Contexter, providing a userIP and a error
 type context struct {
 	http.ResponseWriter
 	userIP userIP
 	err    error
 }
 
-// context is an implementation for the Context interface.
+// context is an implementation for the Contexter interface.
 //
 // It receives a pointer to a value that is already stored inside the context.
 // Values are distiguished by their type.
@@ -36,7 +36,7 @@ func (c *context) Context(ctxPtr interface{}) {
 	}
 }
 
-// SetContext is an implementation for the Context interface.
+// SetContext is an implementation for the Contexter interface.
 //
 // It receives a pointer to a value that will be stored inside the context.
 // Values are distiguished by their type, that means that SetContext replaces
@@ -73,10 +73,10 @@ func (setUserIP) Wrap(next http.Handler) http.Handler {
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		ip, err := ipfromRequest(req)
 		if err != nil {
-			rw.(Context).SetContext(&err)
+			rw.(Contexter).SetContext(&err)
 		} else {
 			uIP := userIP(ip)
-			rw.(Context).SetContext(&uIP)
+			rw.(Contexter).SetContext(&uIP)
 		}
 		next.ServeHTTP(rw, req)
 	}
@@ -105,7 +105,7 @@ func (handleError) Wrap(next http.Handler) http.Handler {
 	var f http.HandlerFunc
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		var err error
-		rw.(Context).Context(&err)
+		rw.(Contexter).Context(&err)
 		if err != nil {
 			rw.WriteHeader(http.StatusInternalServerError)
 			rw.Write([]byte(err.Error()))
@@ -124,7 +124,7 @@ func (app) Wrap(next http.Handler) http.Handler {
 	var f http.HandlerFunc
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		var uIP userIP
-		rw.(Context).Context(&uIP)
+		rw.(Contexter).Context(&uIP)
 		fmt.Fprint(rw, net.IP(uIP).String())
 	}
 	return f

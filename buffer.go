@@ -25,16 +25,16 @@ type Buffer struct {
 	header http.Header
 }
 
-// Context gets the Context of the underlying response writer. It panics if the underlying response writer
-// does no implement Context
+// Context gets the context of the underlying response writer. It panics if the underlying response writer
+// does no implement Contexter
 func (bf *Buffer) Context(ctxPtr interface{}) {
-	bf.ResponseWriter.(Context).Context(ctxPtr)
+	bf.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer
-// does no implement Context
+// does no implement Contexter
 func (bf *Buffer) SetContext(ctxPtr interface{}) {
-	bf.ResponseWriter.(Context).SetContext(ctxPtr)
+	bf.ResponseWriter.(Contexter).SetContext(ctxPtr)
 }
 
 // Header returns the cached http.Header and tracks this call as change

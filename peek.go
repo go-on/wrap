@@ -72,13 +72,13 @@ func (p *Peek) FlushMissing() {
 // Context gets the Context of the underlying response writer. It panics if the underlying response writer
 // does no implement Context
 func (p *Peek) Context(ctxPtr interface{}) {
-	p.ResponseWriter.(Context).Context(ctxPtr)
+	p.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer
 // does no implement Context
 func (p *Peek) SetContext(ctxPtr interface{}) {
-	p.ResponseWriter.(Context).SetContext(ctxPtr)
+	p.ResponseWriter.(Contexter).SetContext(ctxPtr)
 }
 
 // Header returns the cached http.Header, tracking the call as change

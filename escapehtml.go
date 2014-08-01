@@ -30,15 +30,15 @@ type EscapeHTML struct {
 }
 
 // Context gets the Context of the underlying response writer. It panics if the underlying response writer
-// does no implement Context
+// does no implement Contexter
 func (e *EscapeHTML) Context(ctxPtr interface{}) {
-	e.ResponseWriter.(Context).Context(ctxPtr)
+	e.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer
-// does no implement Context
+// does no implement Contexter
 func (e *EscapeHTML) SetContext(ctxPtr interface{}) {
-	e.ResponseWriter.(Context).SetContext(ctxPtr)
+	e.ResponseWriter.(Contexter).SetContext(ctxPtr)
 }
 
 // Write writes to the inner *http.ResponseWriter escaping html special chars on the fly

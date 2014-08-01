@@ -283,8 +283,8 @@ func (c *ctx) Context(context interface{}) {
 
 func contextSetter(rw http.ResponseWriter, req *http.Request) {
 	var hello string
-	rw.(Context).Context(&hello)
-	rw.(Context).SetContext(hello + "world")
+	rw.(Contexter).Context(&hello)
+	rw.(Contexter).SetContext(hello + "world")
 }
 
 func TestCheckContext(t *testing.T) {
