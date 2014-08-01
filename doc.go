@@ -5,10 +5,8 @@
 /*
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-Each middleware is a wrapper for another middleware and fullfills the
+Each middleware is a wrapper for another middleware and implements the
 Wrapper interface.
-
-A nice introduction into this library can be found at http://metakeule.github.io/article/wrap-go-middlware-framework.html.
 
 Features
 
@@ -44,6 +42,47 @@ Benchmarks (Go 1.3):
 Credits
 
 Initial inspiration came from Christian Neukirchen's rack for ruby some years ago.
+
+
+Content of the package
+
+The core of this package is the New function that constructs a stack of middlewares that implement
+the Wrapper interface.
+
+If the global DEBUG flag is set before calling New then each middleware call will result in
+a calling the Debug method of the global DEBUGGER (defaults to a logger).
+
+To help constructing middleware there are some adapters like WrapperFunc, Handler, HandlerFunc,
+NextHandler and NextHandlerFunc each a adapting to the Wrapper interface.
+
+To help sharing per request context there is a Context interface that must be implemented by
+the ResponseWriter. That can easily be done be providing a middleware that injects a context
+that wraps the current ResponseWriter and implements the Context interface.
+
+An example can be found in the file example_context_test,go.
+
+Furthermore this package provides some ResponseWriter wrappers that respect the possibility that
+the inner ResponseWriter implements the Context interface and that help with development of middleware.
+
+These are Buffer, Peek and EscapeHTML.
+
+Buffer is a simple buffer. A middleware may pass it to the next handlers ServeHTTP method as a
+drop in replacement for the response writer.
+
+After the ServeHTTP method is run the middleware may examine what has been written to the Buffer and
+decide what to write to the "real" ResponseWriter (that may well be another buffer passed from another
+middleware).
+
+The disadvantage of the Buffer is that the body of the response is written two times and that the complete
+body must be cached in the memory which will be inacceptable for large bodies.
+
+Therefor Peek is an alternative response writer wrapper that only caches the headers and the
+status code but allows interception of the Write method. All middleware that don't need to read
+the whole response body should use Peek or provide their own ResponseWriter wrapper (then do not
+forget to implement the Context interface).
+
+Finally EscapeHTML provides a nice Context aware response writer wrapper that allows on the fly
+html escaping of the bytes written to the wrapped response writer.
 
 */
 package wrap
