@@ -17,7 +17,7 @@ var NoOp = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
 // serves the request and may let the second wrapper (its "next" wrapper) serve.
 // The second wrapper may let the third wrapper serve and so on.
 // The last wrapper has as "next" wrapper the not exported NoOp handler that does nothing.
-// If DEBUG is set, each http.Handler is wrapped with a debug struct that calls DEBUGGER.Debug before
+// If DEBUG is set, each http.Handler is wrapped with a Debug struct that calls DEBUGGER.Debug before
 // running the actual http.Handler.
 func New(wrapper ...Wrapper) (h http.Handler) {
 	if DEBUG {
@@ -30,5 +30,8 @@ func New(wrapper ...Wrapper) (h http.Handler) {
 	return
 }
 
-// Stack provides an alternative name to New for . imports
-var Stack = New
+// WrapperFunc is an adapter for a function that acts as Wrapper
+type WrapperFunc func(http.Handler) http.Handler
+
+// Wrap makes the WrapperFunc fulfill the Wrapper interface by calling itself.
+func (wf WrapperFunc) Wrap(next http.Handler) http.Handler { return wf(next) }
