@@ -1,36 +1,22 @@
+// +build go1.1
+
 package wrap
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 )
-
-type write string
-
-func (w write) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(wr, string(w))
-}
-
-func (w write) ServeHandle(next http.Handler, wr http.ResponseWriter, req *http.Request) {
-	w.ServeHTTP(wr, req)
-	next.ServeHTTP(wr, req)
-}
-
-func (w write) Wrap(next http.Handler) http.Handler {
-	return ServeHandle(w, next)
-}
 
 func TestWrap(t *testing.T) {
 	tests := map[string]http.Handler{
 		"abc": New(
 			write("a"),
 			write("b"),
-			write("c"),
+			HandlerFunc(write("c").ServeHTTP),
 		),
-		"ab": Stack(
-			write("a"),
-			Handler(write("b")),
+		"ab": New(
+			WrapperFunc(write("a").Wrap),
+			writeStop("b"),
 			write("c"),
 		),
 	}
