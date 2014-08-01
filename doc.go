@@ -61,7 +61,7 @@ To help sharing per request context there is a Context interface that must be im
 the ResponseWriter. That can easily be done be providing a middleware that injects a context
 that wraps the current ResponseWriter and implements the Context interface.
 
-An example can be found in the file example_context_test,go.
+An example can be found in the file example_context_test.go.
 
 Furthermore this package provides some ResponseWriter wrappers that respect the possibility that
 the inner ResponseWriter implements the Context interface and that help with development of middleware.
