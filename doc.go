@@ -15,6 +15,8 @@ Features
 - small; core is only 13 LOC
 - based on http.Handler interface; integrates fine with net/http
 - middleware stacks are http.Handlers too and may be embedded
+- has a solution for per request context sharing
+- has debugging helper
 - low memory footprint
 - fast
 
