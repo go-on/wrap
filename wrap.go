@@ -16,9 +16,9 @@ var NoOp = http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
 // When it serves the request the first given wrapper
 // serves the request and may let the second wrapper (its "next" wrapper) serve.
 // The second wrapper may let the third wrapper serve and so on.
-// The last wrapper has as "next" wrapper the not exported NoOp handler that does nothing.
-// If DEBUG is set, each http.Handler is wrapped with a Debug struct that calls DEBUGGER.Debug before
-// running the actual http.Handler.
+// The last wrapper has as "next" wrapper the NoOp handler that does nothing.
+// If DEBUG is set, each handler is wrapped with a Debug struct that calls DEBUGGER.Debug before
+// running the handler.
 func New(wrapper ...Wrapper) (h http.Handler) {
 	if DEBUG {
 		return _debug(wrapper...)
