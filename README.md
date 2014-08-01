@@ -10,11 +10,13 @@ Package wrap creates a fast and flexible middleware stack for http.Handlers.
 Features
 --------
 
-- small; core is only 13 LOC
-- based on http.Handler interface; integrates fine with net/http
-- middleware stacks are http.Handlers too and may be embedded
-- low memory footprint
-- fast
+- **small**; core is only 13 LOC
+- based on **http.Handler interface**; integrates fine with net/http
+- middleware **stacks are http.Handlers too** and may be embedded
+- has a solution for **per request context sharing**
+- has **debugging helper**
+- **low memory footprint**
+- **fast**
 
 How does it work
 ----------------
@@ -31,53 +33,12 @@ Each wrapper wraps the the `http.Handler` that comes further down
 the middleware stack and returns a `http.Handler` that handles the
 request previously.
 
-Example
--------
+Examples
+--------
 
-```go
-package main
+See `example_test.go` for a simple example without context and `example_context_test.go` for an example with context sharing.
 
-import (
-    "fmt"
-    "net/http"
-    "github.com/go-on/wrap"
-)
-
-type print string
-
-func (p print) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
-    fmt.Println(p)
-}
-
-// ServeHTTPNext prints the string and calls the next handler in the chain
-func (p print) ServeHTTPNext(next http.Handler, wr http.ResponseWriter, req *http.Request) {
-    fmt.Print(p)
-    next.ServeHTTP(wr, req)
-}
-
-func main() {
-
-    // creates a chain of Wrappers
-    h := wrap.New(
-
-        // uses print.ServeHTTPNext
-        wrap.NextHandler(print("ready...")),
-
-        // uses print.ServeHTTPNext
-        wrap.NextHandler(print("steady...")),
-        
-        // uses print.ServeHTTP
-        wrap.Handler(print("go!")),
-    )
-
-    r, _ := http.NewRequest("GET", "/", nil)
-    h.ServeHTTP(nil, r)
-
-    // Output:
-    // ready...steady...go!
-    //
-}
-```
+Also look into the repository of blessed middleware [github.com/go-on/wrap-contrib](https://github.com/go-on/wrap-contrib).
 
 Status
 ------
