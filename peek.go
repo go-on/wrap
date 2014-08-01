@@ -36,17 +36,24 @@ type Peek struct {
 //
 // The proceed function is called when the Write method is run for the first time.
 // It receives the Peek and may check the cached headers and the cached status code.
+//
 // If the cached headers and the cached status code should be flushed to the underlying
 // response writer, the proceed function must do so (e.g. by calling FlushMissing). This also allows to write other headers
 // status codes or not write them at all.
+//
 // If the proceed function returns true, the body will be written to the underlying response write.
 // That also holds for all following calls of Write when proceed is not run anymore.
+//
 // To write some other body or no body at all, proceed must return false,
 // Then after the Write method has been run the Peek might be checked again and the underlying
 // ResponseWriter that is exposed by Peek might be used to write a custom body.
-// However if the http.Handler that receives the Peek does not write to the body, the proceed will not
-// be called at all. To ensure that any cached headers and status code will be flushed, the FlushMissing
+//
+// However if the http.Handler that receives the Peek does not write to the body, proceed will not
+// be called at all.
+//
+// To ensure that any cached headers and status code will be flushed, the FlushMissing
 // method can be called after the serving http.Handler is run.
+//
 // If proceed is nil, Write behaves as if proceed would have returned true.
 func NewPeek(rw http.ResponseWriter, proceed func(*Peek) bool) *Peek {
 	return &Peek{ResponseWriter: rw, proceed: proceed, header: make(http.Header)}
