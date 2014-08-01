@@ -10,21 +10,17 @@ Wrapper interface.
 
 Features
 
-- small; core is only 13 LOC
-
-- based on http.Handler interface; nicely integrates with net/http
-
-- middleware stacks are http.Handlers too and may be embedded
-
-- has a solution for per request context sharing
-
-- has debugging helper
-
-- low memory footprint
-
-- fast
+  - small; core is only 13 LOC
+  - based on http.Handler interface; nicely integrates with net/http
+  - middleware stacks are http.Handlers too and may be embedded
+  - has a solution for per request context sharing
+  - has debugging helper
+  - low memory footprint
+  - fast
 
 Wrappers can be found at github.com/go-on/wrap-contrib.
+
+A (mountable) router that plays fine with wrappers can be found at github.com/go-on/router.
 
 Status
 
@@ -36,7 +32,7 @@ Benchmarks (Go 1.3):
 	// The overhead of n writes to http.ResponseWriter via n wrappers
 	// vs n writes in a loop within a single http.Handler
 
-	BenchmarkServing2Simple     1000000 1067    ns/op   1,00x
+  BenchmarkServing2Simple     1000000 1067    ns/op   1,00x
   BenchmarkServing2Wrappers   1000000 1121    ns/op   1,05x
 
   BenchmarkServing50Simple    100000  26041   ns/op   1,00x
