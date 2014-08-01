@@ -18,7 +18,7 @@ type context struct {
 	err    error
 }
 
-// Context is an implementation for the Context interface.
+// context is an implementation for the Context interface.
 //
 // It receives a pointer to a value that is already stored inside the context.
 // Values are distiguished by their type.
@@ -73,7 +73,6 @@ func (setUserIP) Wrap(next http.Handler) http.Handler {
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		ip, err := ipfromRequest(req)
 		if err != nil {
-			// fmt.Println(err.Error())
 			rw.(Context).SetContext(&err)
 		} else {
 			uIP := userIP(ip)
