@@ -111,6 +111,8 @@ func (p *Peek) IsOk() bool {
 //
 // The proceed function is only called the first time, Write has been called.
 // If proceed is nil, it behaves as if proceed would have returned true.
+//
+// See NewPeek for more informations about the usage of the proceed function.
 func (p *Peek) Write(b []byte) (int, error) {
 	if p.proceed != nil {
 		if !p.isChecked {
