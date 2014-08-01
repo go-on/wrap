@@ -49,8 +49,8 @@ func (p print) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
     fmt.Println(p)
 }
 
-// ServeHandle prints the string and calls the next handler in the chain
-func (p print) ServeHandle(next http.Handler, wr http.ResponseWriter, req *http.Request) {
+// ServeHTTPNext prints the string and calls the next handler in the chain
+func (p print) ServeHTTPNext(next http.Handler, wr http.ResponseWriter, req *http.Request) {
     fmt.Print(p)
     next.ServeHTTP(wr, req)
 }
@@ -60,11 +60,11 @@ func main() {
     // creates a chain of Wrappers
     h := wrap.New(
 
-        // uses print.ServeHandle
-        wrap.ServeWrapper(print("ready...")),
+        // uses print.ServeHTTPNext
+        wrap.NextHandler(print("ready...")),
 
-        // uses print.ServeHandle
-        wrap.ServeWrapper(print("steady...")),
+        // uses print.ServeHTTPNext
+        wrap.NextHandler(print("steady...")),
         
         // uses print.ServeHTTP
         wrap.Handler(print("go!")),
