@@ -12,7 +12,7 @@ Features
 
 - small; core is only 13 LOC
 
-- based on http.Handler interface; integrates fine with net/http
+- based on http.Handler interface; nicely integrates with net/http
 
 - middleware stacks are http.Handlers too and may be embedded
 
