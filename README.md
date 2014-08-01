@@ -96,20 +96,21 @@ Router
 
 A router that is also tested but may change, can be found at [github.com/go-on/router](https://github.com/go-on/router)
 
-Benchmarks
-----------
+Benchmarks (go 1.3)
+-------------------
 
     // The overhead of n writes to http.ResponseWriter via n wrappers
     // vs n writes in a loop within a single http.Handler
 
-    BenchmarkServing2Simple     5000000   718 ns/op 1.00x
-    BenchmarkServing2Wrappers   2000000   824 ns/op 1.14x
+    BenchmarkServing2Simple     1000000 1067    ns/op   1,00x
+    BenchmarkServing2Wrappers   1000000 1121    ns/op   1,05x
 
-    BenchmarkServing50Simple     100000 17466 ns/op 1.00x
-    BenchmarkServing50Wrappers   100000 23984 ns/op 1.37x
+    BenchmarkServing50Simple    100000  26041   ns/op   1,00x
+    BenchmarkServing50Wrappers  100000  27053   ns/op   1,04x
 
-    BenchmarkServing100Simple     50000 33686 ns/op 1.00x
-    BenchmarkServing100Wrappers   50000 46676 ns/op 1.39x
+    BenchmarkServing100Simple   50000   52074   ns/op   1,00x
+    BenchmarkServing100Wrappers 50000   53450   ns/op   1,03x
+
 
 
 Credits
