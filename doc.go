@@ -55,7 +55,7 @@ If the global DEBUG flag is set before calling New then each middleware call wil
 a calling the Debug method of the global DEBUGGER (defaults to a logger).
 
 To help constructing middleware there are some adapters like WrapperFunc, Handler, HandlerFunc,
-NextHandler and NextHandlerFunc each a adapting to the Wrapper interface.
+NextHandler and NextHandlerFunc each of them adapting to the Wrapper interface.
 
 To help sharing per request context there is a Context interface that must be implemented by
 the ResponseWriter. That can easily be done be providing a middleware that injects a context
