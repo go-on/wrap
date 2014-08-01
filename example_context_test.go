@@ -132,7 +132,7 @@ func (app) Wrap(next http.Handler) http.Handler {
 
 func ExampleContext() {
 	h := New(
-		context{},
+		context{}, // context must always be the first one
 		setUserIP{},
 		handleError{},
 		app{},
