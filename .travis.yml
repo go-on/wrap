@@ -3,15 +3,14 @@ go:
 #  - 1.0
 #  - 1.1
   - 1.2
+  - 1.3
   - tip
+
 script:
-  - rm -rf $GOPATH/pkg/*
-  - go get -u github.com/go-on/method
-  - go get -u github.com/go-on/wrap-contrib/helper
-  - go get -u github.com/go-on/wrap-contrib/wraps
+  - go get -t github.com/go-on/wrap/...
   - go get code.google.com/p/go.tools/cmd/cover
   - go install code.google.com/p/go.tools/cmd/cover
-  - go test -covermode=count -coverprofile=profile.cov
+  - go test ./... -covermode=count -coverprofile=profile.cov
   - go get github.com/mattn/goveralls
   - go install github.com/mattn/goveralls
   - ../../../../bin/goveralls -coverprofile=profile.cov -service=travis-ci
