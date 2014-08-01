@@ -32,7 +32,7 @@ func (p print2) Wrap(next http.Handler) http.Handler {
 	var f http.HandlerFunc
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		fmt.Print(p)
-		next.ServeHTTP(wr, req)
+		next.ServeHTTP(rw, req)
 	}
 	return f
 }
