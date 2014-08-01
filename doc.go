@@ -83,7 +83,7 @@ status code but allows interception of the Write method. All middleware that don
 the whole response body should use Peek or provide their own ResponseWriter wrapper (then do not
 forget to implement the Context interface).
 
-Finally EscapeHTML provides a nice Context aware response writer wrapper that allows on the fly
+Finally EscapeHTML provides a response writer wrapper that allows on the fly
 html escaping of the bytes written to the wrapped response writer.
 
 */
