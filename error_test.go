@@ -23,7 +23,7 @@ func errorMustBe(err interface{}, class interface{}) string {
 func TestBodyFlushedBeforeCode(t *testing.T) {
 
 	rec := httptest.NewRecorder()
-	ckA := NewRWPeek(rec, func(rwp *RWPeek) bool {
+	ckA := NewPeek(rec, func(rwp *Peek) bool {
 		return true
 	})
 
@@ -33,14 +33,14 @@ func TestBodyFlushedBeforeCode(t *testing.T) {
 
 	defer func() {
 		e := recover()
-		errMsg := errorMustBe(e, BodyFlushedBeforeCode{})
+		errMsg := errorMustBe(e, ErrBodyFlushedBeforeCode{})
 
 		if errMsg != "" {
 			t.Error(errMsg)
 			return
 		}
 
-		err := e.(BodyFlushedBeforeCode)
+		err := e.(ErrBodyFlushedBeforeCode)
 		_ = err.Error()
 	}()
 
@@ -51,7 +51,7 @@ func TestBodyFlushedBeforeCode(t *testing.T) {
 func TestBodyFlushedBeforeHeaders(t *testing.T) {
 
 	rec := httptest.NewRecorder()
-	ckA := NewRWPeek(rec, func(rwp *RWPeek) bool {
+	ckA := NewPeek(rec, func(rwp *Peek) bool {
 		return true
 	})
 
@@ -61,14 +61,14 @@ func TestBodyFlushedBeforeHeaders(t *testing.T) {
 
 	defer func() {
 		e := recover()
-		errMsg := errorMustBe(e, BodyFlushedBeforeCode{})
+		errMsg := errorMustBe(e, ErrBodyFlushedBeforeCode{})
 
 		if errMsg != "" {
 			t.Error(errMsg)
 			return
 		}
 
-		err := e.(BodyFlushedBeforeCode)
+		err := e.(ErrBodyFlushedBeforeCode)
 		_ = err.Error()
 	}()
 
@@ -79,7 +79,7 @@ func TestBodyFlushedBeforeHeaders(t *testing.T) {
 func TestCodeFlushedBeforeHeaders(t *testing.T) {
 
 	rec := httptest.NewRecorder()
-	ckA := NewRWPeek(rec, func(rwp *RWPeek) bool {
+	ckA := NewPeek(rec, func(rwp *Peek) bool {
 		return true
 	})
 
@@ -89,14 +89,14 @@ func TestCodeFlushedBeforeHeaders(t *testing.T) {
 
 	defer func() {
 		e := recover()
-		errMsg := errorMustBe(e, CodeFlushedBeforeHeaders{})
+		errMsg := errorMustBe(e, ErrCodeFlushedBeforeHeaders{})
 
 		if errMsg != "" {
 			t.Error(errMsg)
 			return
 		}
 
-		err := e.(CodeFlushedBeforeHeaders)
+		err := e.(ErrCodeFlushedBeforeHeaders)
 		_ = err.Error()
 	}()
 

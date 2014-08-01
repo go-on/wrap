@@ -15,6 +15,8 @@ func (l *logDebugger) Debug(req *http.Request, obj interface{}, role string) {
 	l.Printf("%s %s %T as %s", req.Method, req.URL.Path, obj, role)
 }
 
+// NewLogDebugger sets the DEBUGGER  to a logger that logs to the given io.Writer.
+// Flag is a flag from the log standard library that is passed to log.New
 func NewLogDebugger(out io.Writer, flag int) {
 	DEBUGGER = &logDebugger{log.New(out, "[go-on/wrap debugger]", flag)}
 }
@@ -28,26 +30,25 @@ type Debugger interface {
 }
 
 // DEBUGGER is the Debugger used for debugging middleware stacks.
-// It defaults to a logging debugger
+// It defaults to a logging debugger that logs to os.Stdout
 var DEBUGGER Debugger = &logDebugger{log.New(os.Stdout, "[go-on/wrap debugger]", log.LstdFlags)}
 
 // DEBUG indicates if any stack should be debugged. Set it before any call to New.
 var DEBUG = false
 
+// debug is an internal type
 type debug struct {
-	obj  interface{}
-	role string
-	h    http.Handler
+	Object interface{}
+	Role   string
+	http.Handler
 }
-
-var asHandler = "http.Handler"
-var asHandlerFunc = "http.HandlerFunc"
-var asWrapper = "Wrapper"
 
 func (d *debug) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	DEBUGGER.Debug(req, d.obj, d.role)
-	d.h.ServeHTTP(rw, req)
+	DEBUGGER.Debug(req, d.Object, d.Role)
+	d.Handler.ServeHTTP(rw, req)
 }
+
+var asWrapper = "Wrapper"
 
 // _debug is like New() but wraps each http.Handler with a debug struct that calls DEBUGGER.Debug before
 // running the actual http.Handler.
