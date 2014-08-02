@@ -18,9 +18,9 @@ Features
   - low memory footprint
   - fast
 
-Wrappers can be found at github.com/go-on/wrap-contrib.
+Wrappers can be found at http://godoc.org/github.com/go-on/wrap-contrib/wraps.
 
-A (mountable) router that plays fine with wrappers can be found at github.com/go-on/router.
+A (mountable) router that plays fine with wrappers can be found at http://godoc.org/github.com/go-on/router.
 
 Status
 
