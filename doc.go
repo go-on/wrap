@@ -129,7 +129,7 @@ data of the same type, simple defined an alias type for each key.
 
 5. Is there an example how to integrate with 3rd party middleware libraries that expect context?
 
-Answer: Yes, have a look at https://github.com/go-on/wrap-contrib/blob/master/third-party/nosurf/nosurf.go.
+Answer: Yes, have a look at http://godoc.org/github.com/go-on/wrap-contrib/third-party/wraphttpauth.
 
 6. What about spawning goroutines / how does it relate to code.google.com/p/go.net/context?
 
