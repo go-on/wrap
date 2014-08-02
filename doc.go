@@ -17,6 +17,7 @@ Features
   - has debugging helper
   - low memory footprint
   - fast
+  - no dependency apart from the standard library
 
 Wrappers can be found at http://godoc.org/github.com/go-on/wrap-contrib/wraps.
 

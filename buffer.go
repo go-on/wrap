@@ -25,6 +25,14 @@ type Buffer struct {
 	header http.Header
 }
 
+// NewBuffer creates a new Buffer by wrapping the given response writer.
+func NewBuffer(w http.ResponseWriter) (bf *Buffer) {
+	bf = &Buffer{}
+	bf.ResponseWriter = w
+	bf.header = make(http.Header)
+	return
+}
+
 // Context gets the context of the underlying response writer. It panics if the underlying response writer
 // does no implement Contexter
 func (bf *Buffer) Context(ctxPtr interface{}) {
@@ -114,12 +122,4 @@ func (bf *Buffer) FlushHeaders() {
 			header.Add(k, val)
 		}
 	}
-}
-
-// NewBuffer creates a new Buffer by wrapping the given response writer.
-func NewBuffer(w http.ResponseWriter) (bf *Buffer) {
-	bf = &Buffer{}
-	bf.ResponseWriter = w
-	bf.header = make(http.Header)
-	return
 }

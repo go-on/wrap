@@ -1,15 +1,6 @@
 package wrap
 
-import (
-	"net/http"
-)
-
-var (
-	asHandler         = "http.Handler"
-	asHandlerFunc     = "http.HandlerFunc"
-	asNextHandler     = "NextHandler"
-	asNextHandlerFunc = "NextHandlerFunc"
-)
+import "net/http"
 
 // Handler returns a Wrapper for a http.Handler.
 // The returned Wrapper simply runs the given handler and ignores the
@@ -65,7 +56,7 @@ func NextHandler(sh interface {
 // NextHandlerFunc is a Wrapper that is a function handling the request with the aid of the given handler
 type NextHandlerFunc func(next http.Handler, rw http.ResponseWriter, req *http.Request)
 
-// Wrap makes the ServeHandlerFunc fullfill the Wrapper interface by calling itself.
+// Wrap implements the Wrapper interface by calling the function.
 func (f NextHandlerFunc) Wrap(next http.Handler) http.Handler {
 	var fn http.HandlerFunc
 

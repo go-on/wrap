@@ -7,6 +7,14 @@ import (
 	"os"
 )
 
+var (
+	asHandler         = "http.Handler"
+	asHandlerFunc     = "http.HandlerFunc"
+	asNextHandler     = "NextHandler"
+	asNextHandlerFunc = "NextHandlerFunc"
+	asWrapper         = "Wrapper"
+)
+
 type logDebugger struct {
 	*log.Logger
 }
@@ -47,8 +55,6 @@ func (d *debug) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	DEBUGGER.Debug(req, d.Object, d.Role)
 	d.Handler.ServeHTTP(rw, req)
 }
-
-var asWrapper = "Wrapper"
 
 // _debug is like New() but wraps each http.Handler with a debug struct that calls DEBUGGER.Debug before
 // running the actual http.Handler.
