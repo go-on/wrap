@@ -324,7 +324,7 @@ func TestBufferContext(t *testing.T) {
 func TestResponseBufferWriteTo(t *testing.T) {
 	rec, req := NewTestRequest("GET", "/")
 	buf := NewBuffer(rec)
-	Write("hi").ServeHTTP(buf, req)
+	write("hi").ServeHTTP(buf, req)
 	buf.FlushAll()
 	err := AssertResponse(rec, "hi", 200)
 	if err != nil {
@@ -335,7 +335,7 @@ func TestResponseBufferWriteTo(t *testing.T) {
 func TestResponseBufferReset(t *testing.T) {
 	buf := NewBuffer(nil)
 	_, req := NewTestRequest("GET", "/")
-	Write("hi").ServeHTTP(buf, req)
+	write("hi").ServeHTTP(buf, req)
 
 	buf.Reset()
 	if buf.Code != 0 {
@@ -359,9 +359,9 @@ func TestResponseBufferReset(t *testing.T) {
 func TestResponseBufferWriteToStatus(t *testing.T) {
 	rec, req := NewTestRequest("GET", "/")
 	buf := NewBuffer(rec)
-	NotFound(buf, req)
+	http.NotFoundHandler().ServeHTTP(buf, req)
 	buf.FlushAll()
-	err := AssertResponse(rec, "not found", 404)
+	err := AssertResponse(rec, "404 page not found", 404)
 	if err != nil {
 		t.Error(err)
 	}
@@ -375,7 +375,7 @@ func TestResponseBufferChanged(t *testing.T) {
 	buf2 := NewBuffer(nil)
 	buf1 := NewBuffer(buf2)
 	_, req := NewTestRequest("GET", "/")
-	Write("hi").ServeHTTP(buf1, req)
+	write("hi").ServeHTTP(buf1, req)
 	buf1.FlushAll()
 
 	if buf1.BodyString() != "hi" {
@@ -433,7 +433,7 @@ func TestResponseBufferNotChanged(t *testing.T) {
 	buf1 := NewBuffer(nil)
 	buf2 := NewBuffer(nil)
 	_, req := NewTestRequest("GET", "/")
-	DoNothing(buf1, req)
+	NoOp(buf1, req)
 	buf1.FlushAll()
 
 	if buf1.HasChanged() {

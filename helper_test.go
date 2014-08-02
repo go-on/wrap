@@ -47,6 +47,7 @@ func (noHTTPWriter) WriteHeader(i int) {
 type write string
 
 func (w write) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
+	wr.Header().Set("Content-Type", "text/plain")
 	fmt.Fprint(wr, string(w))
 }
 
