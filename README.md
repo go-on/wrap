@@ -38,7 +38,7 @@ Examples
 
 See `example_test.go` for a simple example without context and `example_context_test.go` for an example with context sharing.
 
-Also look into the repository of blessed middleware [github.com/go-on/wrap-contrib](https://github.com/go-on/wrap-contrib).
+Also look into the repository of blessed middleware [github.com/go-on/wrap-contrib/wraps](https://github.com/go-on/wrap-contrib/wraps).
 
 Status
 ------
@@ -50,7 +50,7 @@ development will be middleware in the go-on/wrap-contrib repository.
 Middleware
 ----------
 
-more examples and middleware and can be found at [github.com/go-on/wrap-contrib](https://github.com/go-on/wrap-contrib) 
+more examples and middleware and can be found at [github.com/go-on/wrap-contrib/wraps](https://github.com/go-on/wrap-contrib/wraps) 
 
 Router
 ------
