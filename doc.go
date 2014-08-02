@@ -28,7 +28,7 @@ Status
 100% test coverage.
 This package is considered complete and the API is stable.
 
-Benchmarks (Go 1.3):
+Benchmarks (Go 1.3)
 
 	// The overhead of n writes to http.ResponseWriter via n wrappers
 	// vs n writes in a loop within a single http.Handler
@@ -87,7 +87,8 @@ forget to implement the Contexter interface).
 Finally EscapeHTML provides a response writer wrapper that allows on the fly
 html escaping of the bytes written to the wrapped response writer.
 
-How to write a middleware?
+
+How to write a middleware
 
 It is pretty easy to write your custom middleware. You should start with a new struct
 type - that allows you to add options as fields later on.
