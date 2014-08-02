@@ -97,7 +97,7 @@ error. It means that either you have no context in your stack or you inject the 
 the context does not handle the kind of type the middleware expects. In each case you should fix it and
 the panic forces you to do. Use the DEBUG flag to see what's going on.
 
-2. What happens if another response writer wrapper wraps my context or another context?
+2. What happens if my context is wrapped in another context or response writer?
 
 Answer: You should only have one context per application and inject it as first wrapper into your
 middleware stack. All context specific data belongs there.
