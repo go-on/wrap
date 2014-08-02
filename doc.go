@@ -87,6 +87,46 @@ forget to implement the Contexter interface).
 Finally EscapeHTML provides a response writer wrapper that allows on the fly
 html escaping of the bytes written to the wrapped response writer.
 
+How to write a middleware?
+
+It is pretty easy to write your custom middleware. You should start with a new struct
+type - that allows you to add options as fields later on.
+
+Then you should implement the Wrapper interface like this
+
+    type MyMiddleware struct {
+	     // add your options
+    }
+
+    func (m MyMiddleware) Wrap( next http.Handler) http.Handler {
+	     var f http.HandlerFunc
+	     f = func (rw http.ResponseWriter, req *http.Request) {
+	        // here is where your magic happens
+
+	        // at some point you might want to run the next handler
+	        // if not, your middleware ends the stack chain
+	        next.ServeHTTP(rw http.ResponseWriter, req *http.Request)
+	     }
+	     return f
+    }
+
+If you need to run the next handler in order to inspect what it did,
+replace the response writer with a Peek (see NewPeek) or if you need
+full access to the written body with a Buffer.
+
+To use per request context a custom context type is needed that carries the context data.
+
+Then inside your f function type assert the response writer to a wrap.Contexter
+and use the SetContext and Context methods to store and retrieve your context.
+Always pass a pointer of the context object to these methods.
+
+Don't forget to document that your middleware expects the response writer to
+implement the Contexter interface and to support your context type.
+
+You might want to look at existing middlewares to get some idea:
+http://godoc.org/github.com/go-on/wrap-contrib/wraps
+
+
 FAQ
 
 1. Why is the recommended way to use the Contexter interface to make a type assertion from
@@ -148,6 +188,7 @@ function on the call path between incoming and outgoing requests."
 (Sameer Ajmani, http://blog.golang.org/context)
 
 This is not neccessary anymore. And it is not neccessary for any type of contextual data.
+
 
 */
 package wrap
