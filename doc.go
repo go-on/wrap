@@ -127,7 +127,11 @@ Answer: Type based context allows a very simple implementation that namespaces a
 and needs no memory allocation and is, well, type safe. If you need to store multiple context
 data of the same type, simple defined an alias type for each key.
 
-5. What about spawning goroutines / how does it relate to code.google.com/p/go.net/context?
+5. Is there an example how to integrate with 3rd party middleware libraries that expect context?
+
+Answer: Yes, have a look at https://github.com/go-on/wrap-contrib/blob/master/third-party/nosurf/nosurf.go.
+
+6. What about spawning goroutines / how does it relate to code.google.com/p/go.net/context?
 
 If you need your request to be handled by different goroutines and middlewares you might use
 your Contexter to store and provide access to a code.google.com/p/go.net/context Context just
