@@ -275,10 +275,11 @@ func (c *ctx) SetContext(context interface{}) {
 	c.context = context.(string)
 }
 
-func (c *ctx) Context(context interface{}) {
+func (c *ctx) Context(context interface{}) bool {
 	//*context = *c.context
 	ctx := context.(*string)
 	*ctx = c.context
+	return true
 }
 
 func contextSetter(rw http.ResponseWriter, req *http.Request) {

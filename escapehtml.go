@@ -31,8 +31,8 @@ type EscapeHTML struct {
 
 // Context gets the Context of the underlying response writer. It panics if the underlying response writer
 // does no implement Contexter
-func (e *EscapeHTML) Context(ctxPtr interface{}) {
-	e.ResponseWriter.(Contexter).Context(ctxPtr)
+func (e *EscapeHTML) Context(ctxPtr interface{}) bool {
+	return e.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer

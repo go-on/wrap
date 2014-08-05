@@ -71,8 +71,8 @@ func (p *Peek) FlushMissing() {
 
 // Context gets the Context of the underlying response writer. It panics if the underlying response writer
 // does no implement Context
-func (p *Peek) Context(ctxPtr interface{}) {
-	p.ResponseWriter.(Contexter).Context(ctxPtr)
+func (p *Peek) Context(ctxPtr interface{}) bool {
+	return p.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer

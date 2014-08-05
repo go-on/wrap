@@ -35,8 +35,8 @@ func NewBuffer(w http.ResponseWriter) (bf *Buffer) {
 
 // Context gets the context of the underlying response writer. It panics if the underlying response writer
 // does no implement Contexter
-func (bf *Buffer) Context(ctxPtr interface{}) {
-	bf.ResponseWriter.(Contexter).Context(ctxPtr)
+func (bf *Buffer) Context(ctxPtr interface{}) bool {
+	return bf.ResponseWriter.(Contexter).Context(ctxPtr)
 }
 
 // SetContext sets the Context of the underlying response writer. It panics if the underlying response writer

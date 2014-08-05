@@ -13,7 +13,8 @@ type Contexter interface {
 	http.ResponseWriter
 
 	// Context lets the given pointer point to the saved context of the same type
-	Context(ctxPtr interface{})
+	// Returns if it has found something
+	Context(ctxPtr interface{}) (found bool)
 
 	// SetContext saves the given context pointer via type switch
 	SetContext(ctxPtr interface{})
