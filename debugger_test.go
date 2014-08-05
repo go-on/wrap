@@ -16,7 +16,7 @@ func TestDebug(t *testing.T) {
 	rec := httptest.NewRecorder()
 	var buf bytes.Buffer
 	NewLogDebugger(&buf, log.Lshortfile)
-	DEBUG = true
+	SetDebug()
 
 	New(
 		NextHandler(write("one")),

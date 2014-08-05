@@ -44,6 +44,16 @@ var DEBUGGER Debugger = &logDebugger{log.New(os.Stdout, "[go-on/wrap debugger]",
 // DEBUG indicates if any stack should be debugged. Set it before any call to New.
 var DEBUG = false
 
+// SetDebug() provides a way to set DEBUG=true in a var declaration, like
+//
+//   var _ = wrap.SetDebug()
+//
+// This is an easy way to ensure DEBUG is set to true before the init functions run
+func SetDebug() bool {
+	DEBUG = true
+	return DEBUG
+}
+
 // debug is an internal type
 type debug struct {
 	Object interface{}
