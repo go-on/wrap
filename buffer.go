@@ -25,6 +25,9 @@ type Buffer struct {
 	header http.Header
 }
 
+// make sure to fulfill the Contexter interface
+var _ Contexter = &Buffer{}
+
 // NewBuffer creates a new Buffer by wrapping the given response writer.
 func NewBuffer(w http.ResponseWriter) (bf *Buffer) {
 	bf = &Buffer{}

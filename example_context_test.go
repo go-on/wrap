@@ -18,6 +18,9 @@ type context struct {
 	err    error
 }
 
+// make sure to fulfill the Contexter interface
+var _ Contexter = &context{}
+
 // context is an implementation for the Contexter interface.
 //
 // It receives a pointer to a value that is already stored inside the context.

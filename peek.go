@@ -32,6 +32,9 @@ type Peek struct {
 	proceed func(*Peek) bool
 }
 
+// make sure to fulfill the Contexter interface
+var _ Contexter = &Peek{}
+
 // NewPeek creates a new Peek for the given response writer using the given proceed function.
 //
 // The proceed function is called when the Write method is run for the first time.

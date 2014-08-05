@@ -29,6 +29,9 @@ type EscapeHTML struct {
 	http.ResponseWriter
 }
 
+// make sure to fulfill the Contexter interface
+var _ Contexter = &EscapeHTML{}
+
 // Context gets the Context of the underlying response writer. It panics if the underlying response writer
 // does no implement Contexter
 func (e *EscapeHTML) Context(ctxPtr interface{}) bool {
