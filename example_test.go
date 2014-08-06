@@ -37,7 +37,7 @@ func (p print2) Wrap(next http.Handler) http.Handler {
 	return f
 }
 
-func Example() {
+func ExampleNew() {
 	h := New(
 		NextHandler(print1("ready...")), // make use of ServeHTTPNext method
 		print2("steady..."),             // print2 directly fulfills Wrapper interface

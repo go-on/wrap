@@ -161,7 +161,7 @@ that wants to use / share context.
       var m MyContextData
       // try the getter and setter, they will panic if they don't support the type
       ctx.Context(&m); ctx.SetContext(&m)
-      // do this for every tyoe you need
+      // do this for every type you need
     }
 
     // implement the wrapper interface
@@ -187,7 +187,7 @@ that wants to use / share context.
 How to use middleware that uses per request context
 
 For context sharing the user has to implement the Contexter interface in a way that supports
-all types the middlewares she uses expect.
+all types the used middlewares expect.
 
 Here is a template for an implementation of the Contexter interface
 
@@ -196,8 +196,8 @@ Here is a template for an implementation of the Contexter interface
       myContextData *myMiddleware.MyContextData // a property for each supported type
     }
 
-    // make sure it is a valid context, i.e. if http.ResponseWriter is supported by Context
-    // method, if the correct types are returned and if the panic types are correct
+    // make sure it is a valid context, i.e. http.ResponseWriter is supported by Context
+    // method, the correct types are returned and the panic types are correct
     var _ = wrap.ValidateContextInjecter(&MyContext{})
 
     // retrieves the value of the type to which ctxPtr is a pointer to
@@ -241,8 +241,9 @@ Here is a template for an implementation of the Contexter interface
       return f
     }
 
-At any time the must be only one Contexter in the whole middleware stack and its the best
-to let it be the first middleware. Then you don't have to worry if its there or not.
+At any time there must be only one Contexter in the whole middleware stack and its the best
+to let it be the first middleware. Then you don't have to worry if its there or not (the Stack function
+might help you).
 
 The corresponding middleware stack would look like this
 
@@ -261,8 +262,9 @@ The corresponding middleware stack would look like this
       // stack is now a http.Handler
 
 If your application / handler also uses context data, it is a good idea to implement it as
-ContextWrapper as if it were a middleware and check it ValidateWrapperContexts too. So
-that you get nice panics if your context is wrong, before your server even starts.
+ContextWrapper as if it were a middleware and pass it ValidateWrapperContexts(). So
+if your context is wrong, you will get nice panics before your server even starts.
+And this is always in sync with your app / middleware.
 
 If for some reason the original ResponseWriter is needed (to type assert it to a http.Flusher
 for example), it may be reclaimed with the help of ReclaimResponseWriter().
@@ -281,11 +283,11 @@ It simply passes the ResponseWriter that happens to have context down the middle
 
 On the other hand, exposing the context type by making it a parameter has the effect that every middleware
 will need to pass this parameter to the next one if the next one needs it. Every middleware is then
-tightly coupled to the next one and reordering and mixing of middleware from different sources
+tightly coupled to the next one and reordering or mixing of middleware from different sources
 becomes impossible.
 
 However with the ContextHandler interface and the ValidateWrapperContexts function we have a way
-to guarantee that the requirements are met. And this solution is type safe, too.
+to guarantee that the requirements are met. And this solution is also type safe.
 
 2. A ResponseWriter is an interface, because it may implement other interfaces from the http libary,
 e.g. http.Flusher. If it is wrapped that underlying implementation is not accessible anymore
