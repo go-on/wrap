@@ -106,7 +106,7 @@ Then you could use the following template to implement the Wrapper interface
     func (m MyMiddleware) Wrap( next http.Handler) http.Handler {
 	     var f http.HandlerFunc
 	     f = func (rw http.ResponseWriter, req *http.Request) {
-	        // here is where your magic happens
+	        // do stuff
 
 	        // at some point you might want to run the next handler
 	        // if not, your middleware ends the stack chain
