@@ -130,11 +130,13 @@ http://godoc.org/github.com/go-on/wrap-contrib/wraps
 
 How to write a Contexter
 
-
 A Contexter is expected to be implemented in tandem with the creation of the
-outer application wide middelware stack. So the user of middleware with implement
-the Contexter even if it is used by middlewares to store middleware specific context
-data. There must only be one Contexter per application stack and it should be injected
+outer application wide middelware stack. If a middleware requires specific contextual
+data to be passed along some request it defines a type for it that carries those data
+and expects the user to implement a Contexter supporting this type that is passed to it
+as http.ResponseWriter.
+
+There must only be one Contexter per application stack and it should be injected
 into the outer most stack at the beginning.
 
 Injecting a Contexter into the middleware stack means adding a Wrapper (may be the Contexter itself)
@@ -145,10 +147,16 @@ Doing so at the very beginning has the effect that all following http.Handler in
 ResponseWriter that implements Contexter. That allows all of them to set and get context data freely.
 The only condition is that the type of the context data must be supported by the Contexter.
 That is a hidden dependency (some middleware depends on the Contexter to support its context data type)
-and t should be covered by unit tests. However it gives great freedom when organizing and ordering middleware
-as the middleware in between does not have to know about a Contexter at all (if it does not need context) and
-especially not about a certain context type being supported if does not care about that type.
+and should be covered by unit tests.
+
+However it gives great freedom when organizing and ordering middleware as the middleware in between
+does not have to know about a certain context type if does not care about it.
+
 It simply passes the ResponseWriter that happens to have context down the middleware stack chain.
+
+On the other hand, exposing the context type by making it a parameter has the effect that every middleware
+will need to pass this parameter to the next one if the next one needs it. That requirement however
+may change making context sharing and reusability of middlewares from different sources virtually impossible.
 
 When implementing a Contexter it is important to support the *http.ResponseWriter type by the Context()
 method, because it allows middleware to retrieve the original response writer and type assert it to
@@ -272,10 +280,6 @@ A middleware using the error context could look like this:
       }
       next.ServeHTTP(rw,req)
     }
-
-
-
-
 
 FAQ
 
