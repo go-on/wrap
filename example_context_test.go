@@ -183,7 +183,7 @@ func (app) Wrap(next http.Handler) http.Handler {
 	return f
 }
 
-func ExampleContext() {
+func ExampleContexter() {
 	ctx := &context{}
 
 	// make sure, the context supports all types required by the used middleware
