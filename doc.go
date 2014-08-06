@@ -23,10 +23,6 @@ Wrappers can be found at http://godoc.org/github.com/go-on/wrap-contrib/wraps.
 
 A (mountable) router that plays fine with wrappers can be found at http://godoc.org/github.com/go-on/router.
 
-Status
-
-100% test coverage.
-This package is considered complete and the API is stable.
 
 Benchmarks (Go 1.3)
 

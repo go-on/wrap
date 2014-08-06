@@ -3,8 +3,7 @@ wrap
 
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-[![Build Status](https://drone.io/github.com/go-on/wrap/status.png)](https://drone.io/github.com/go-on/wrap/latest) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master) [![Project status](http://img.shields.io/status/stable.png?color=green)](#) [![Todo status](http://img.shields.io/todo/complete.png?color=green)](#) [![Tutorial](http://img.shields.io/blog/tutorial.png?color=blue)](http://metakeule.github.io/article/wrap-go-middlware-framework.html) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Total views](https://sourcegraph.com/api/repos/github.com/go-on/wrap/counters/views.png)](https://sourcegraph.com/github.com/go-on/wrap)
-
+[![Build Status](https://drone.io/github.com/go-on/wrap/status.png)](https://drone.io/github.com/go-on/wrap/latest) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master) [![Tutorial](http://img.shields.io/blog/tutorial.png?color=blue)](http://metakeule.github.io/article/wrap-go-middlware-framework.html) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Total views](https://sourcegraph.com/api/repos/github.com/go-on/wrap/counters/views.png)](https://sourcegraph.com/github.com/go-on/wrap)
 
 
 Features
@@ -40,13 +39,6 @@ See `example_test.go` for a simple example without context and `example_context_
 
 Also look into the repository of blessed middleware [github.com/go-on/wrap-contrib/wraps](https://godoc.org/github.com/go-on/wrap-contrib/wraps).
 
-Status
-------
-This package is considered feature complete, stable and ready for production.
-
-It will not change (apart from documentation improvements), since all further
-development will be middleware in the go-on/wrap-contrib repository.
-
 Middleware
 ----------
 
@@ -78,4 +70,3 @@ Credits
 -------
 
 Initial inspiration came from Christian Neukirchen's rack for ruby some years ago.
-
