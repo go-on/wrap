@@ -13,10 +13,11 @@ Features
 - based on **http.Handler interface**; integrates fine with net/http
 - middleware **stacks are http.Handlers too** and may be embedded
 - has a solution for **per request context sharing**
-- freely mix middleware with and without context (same interface)
+- freely **mix middleware with and without context** (same interface)
 - has **debugging helper**
 - **low memory footprint**
 - **fast**
+- easy to create adapters / wrappers for 3rd party middleware
 
 How does it work
 ----------------

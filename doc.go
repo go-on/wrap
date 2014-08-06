@@ -19,6 +19,7 @@ Features
   - fast
   - no dependency apart from the standard library
   - freely mix middleware with and without context (same interface)
+  - easy to create adapters / wrappers for 3rd party middleware
 
 Wrappers can be found at http://godoc.org/github.com/go-on/wrap-contrib/wraps.
 
@@ -60,7 +61,10 @@ the ResponseWriter. That can easily be done be providing a middleware that injec
 that wraps the current ResponseWriter and implements the Contexter interface. It must a least support
 the extraction of the wrapped ResponseWriter.
 
-An example can be found in the file example_context_test.go.
+Then there are functions to validate implementations of Contexter (ValidateContextInjecter) and to validate them against
+wrappers that store and retrieve the context data (ValidateWrapperContexts).
+
+An complete example for shared contexts can be found in the file example_context_test.go.
 
 Furthermore this package provides some ResponseWriter wrappers that also implement Contexter and
 that help with development of middleware.
@@ -95,6 +99,10 @@ Then you could use the following template to implement the Wrapper interface
 	     // add your options
     }
 
+    // make sure it conforms to the Wrapper interface
+    var _ wrap.Wrapper = MyMiddleware{}
+
+    // implement the wrapper interface
     func (m MyMiddleware) Wrap( next http.Handler) http.Handler {
 	     var f http.HandlerFunc
 	     f = func (rw http.ResponseWriter, req *http.Request) {
@@ -111,107 +119,121 @@ If you need to run the next handler in order to inspect what it did,
 replace the response writer with a Peek (see NewPeek) or if you need
 full access to the written body with a Buffer.
 
+How to use middleware
+
+To form a middleware stack, simply use New() and pass it the middlewares.
+They get the request top-down. There are some adapters to let for example
+a http.Handler be a middleware (Wrapper) that does not call the next handler
+and stops the chain.
+
+      stack := wrap.New(
+          MyMiddleware{},
+          OtherMiddleware{},
+          wrap.Handler(aHandler),
+      )
+
+      // stack is now a http.Handler
+
+How to write a middleware that uses per request context
+
 To use per request context a custom type is needed that carries the context data and
 the user is expected to create and inject a Contexter supporting this type.
-See the documentation of Contexter for more information.
 
-Then inside your f function type assert the response writer to a wrap.Contexter
-and use the SetContext and Context methods to store and retrieve your context data.
-Always pass a pointer of the context object to these methods.
+Here is a template for a middleware that you could use to write middleware
+that wants to use / share context.
 
-Don't forget to document that your middleware expects the response writer to
-implement the Contexter interface and to support your context type.
-
-You might want to look at existing middlewares to get some ideas:
-http://godoc.org/github.com/go-on/wrap-contrib/wraps
-
-How to write a Contexter
-
-A Contexter is expected to be implemented in tandem with the creation of the
-outer application wide middelware stack. If a middleware requires specific contextual
-data to be passed along some request it defines a type for it that carries those data
-and expects the user to implement a Contexter supporting this type that is passed to it
-as http.ResponseWriter.
-
-There must only be one Contexter per application stack and it should be injected
-into the outer most stack at the beginning.
-
-Injecting a Contexter into the middleware stack means adding a Wrapper (may be the Contexter itself)
-that does pass the Contexter wrapping the original ResponseWriter as ResponseWriter to the ServeHTTP
-method of the next http.Handler in the stack.
-
-Doing so at the very beginning has the effect that all following http.Handler in the stack receive a
-ResponseWriter that implements Contexter. That allows all of them to set and get context data freely.
-The only condition is that the type of the context data must be supported by the Contexter.
-That is a hidden dependency (some middleware depends on the Contexter to support its context data type)
-and should be covered by unit tests.
-
-However it gives great freedom when organizing and ordering middleware as the middleware in between
-does not have to know about a certain context type if does not care about it.
-
-It simply passes the ResponseWriter that happens to have context down the middleware stack chain.
-
-On the other hand, exposing the context type by making it a parameter has the effect that every middleware
-will need to pass this parameter to the next one if the next one needs it. That requirement however
-may change making context sharing and reusability of middlewares from different sources virtually impossible.
-
-When implementing a Contexter it is important to support the *http.ResponseWriter type by the Context()
-method, because it allows middleware to retrieve the original response writer and type assert it to
-some interfaces of the standard http library, e.g. http.Flusher. To make this easier there are some
-helper functions like Flush(), CloseNotify() and Hijack() - all making use of the more general ReclaimResponseWriter().
-
-Template for the implementation of a Contexter
-
-    type context struct {
-      http.ResponseWriter
-      err error
+    // MyMiddleware expects the ResponseWriter to implement wrap.Contexter and
+    // to support storing and retrieving the MyContextData type.
+    type MyMiddleware struct {
+       // add your options
     }
 
-    // make sure to fulfill the Contexter interface
-    var _ wrap.Contexter = &context{}
+    // define whatever type you like, but define a type
+    // for each kind of context data you will want to store/retrieve
+    type MyContextData string
 
-    // Context receives a pointer to a value that is already stored inside the context.
-    // Values are distiguished by their type.
-    // Context sets the value of the given pointer to the value of the same type
-    // that is stored inside of the context.
-    // A pointer type that is not supported results in a panic.
-    // Context returns if ctxPtr will be nil after return
-    // Context must support *http.ResponseWriter
-    func (c *context) Context(ctxPtr interface{}) (found bool) {
-      found = true
+    // make sure it conforms to the ContextWrapper interface
+    var _ wrap.ContextWrapper = MyMiddleware{}
+
+    // implements ContextWrapper; panics if Contexter does not support
+    // the needed type
+    func (m MyMiddleware) ValidateContext( ctx wrap.Contexter ) {
+      var m MyContextData
+      // try the getter and setter, they will panic if they don't support the type
+      ctx.Context(&m); ctx.SetContext(&m)
+      // do this for every tyoe you need
+    }
+
+    // implement the wrapper interface
+    func (m MyMiddleware) Wrap( next http.Handler) http.Handler {
+       var f http.HandlerFunc
+       f = func (rw http.ResponseWriter, req *http.Request) {
+
+          ctx := rw.(ctx.Contexter)
+          m := MyContextData("Hello World")
+          ctx.SetContext(&m) // always pass the pointer
+
+          var n MyContextData
+          ctx.Context(&n)
+
+          // n now is MyContextData("Hello World")
+
+          ... do stuff
+          next.ServeHTTP(rw http.ResponseWriter, req *http.Request)
+       }
+       return f
+    }
+
+How to use middleware that uses per request context
+
+For context sharing the user has to implement the Contexter interface in a way that supports
+all types the middlewares she uses expect.
+
+Here is a template for an implementation of the Contexter interface
+
+    type MyContext struct {
+      http.ResponseWriter // you always need this
+      myContextData *myMiddleware.MyContextData // a property for each supported type
+    }
+
+    // make sure it is a valid context, i.e. if http.ResponseWriter is supported by Context
+    // method, if the correct types are returned and if the panic types are correct
+    var _ = wrap.ValidateContextInjecter(&MyContext{})
+
+    // retrieves the value of the type to which ctxPtr is a pointer to
+    func (c *MyContext) Context(ctxPtr interface{}) (found bool) {
+      found = true // save work
       switch ty := ctxPtr.(type) {
+      // always support http.ResponseWriter in Context method
       case *http.ResponseWriter:
         *ty = c.ResponseWriter
-      case *error:
-        if c.err == nil {
+      // add such a case for each supported type
+      case *myMiddleware.MyContextData:
+        if c.myContextData == nil {
           return false
         }
-        *ty = c.err
+        *ty = *c.myContextData
       default:
-        panic(fmt.Sprintf("unsupported context: %T", ctxPtr))
+        // always panic with wrap.ErrUnsupportedContextGetter in Context method on default
+        panic(&wrap.ErrUnsupportedContextGetter{ctxPtr})
       }
       return
     }
 
-    // SetContext receives a pointer to a value that will be stored inside the context.
-    // Values are distiguished by their type, that means that SetContext replaces
-    // and stored value of the same type.
-    // A pointer type that is not supported results in a panic.
-    func (c *context) SetContext(ctxPtr interface{}) {
+    // sets the context of the given type
+    func (c *MyContext) SetContext(ctxPtr interface{}) {
       switch ty := ctxPtr.(type) {
-      case *error:
-        c.err = *ty
+      case *myMiddleware.MyContextData:
+        c.myContextData = ty
       default:
-        panic(fmt.Sprintf("unsupported context: %T", ctxPtr))
+        // always panic with wrap.ErrUnsupportedContextSetter in SetContext method on default
+        panic(&ErrUnsupportedContextSetter{ctxPtr})
       }
     }
 
-    // Wrap implements the wrap.Wrapper interface and injects the Contexter to the
-    // middleware stack.
-    //
-    // When the request is served, the response writer is wrapped by a
-    // new *context which is passed to the next handlers ServeHTTP method.
-    func (c context) Wrap(next http.Handler) http.Handler {
+    // Wrap implements the wrap.Wrapper interface by wrapping a ResponseWriter inside a new
+    // &Context and injecting it into the middleware chain.
+    func (c MyContext) Wrap(next http.Handler) http.Handler {
       var f http.HandlerFunc
       f = func(rw http.ResponseWriter, req *http.Request) {
         next.ServeHTTP(&context{ResponseWriter: rw}, req)
@@ -219,68 +241,62 @@ Template for the implementation of a Contexter
       return f
     }
 
-While it looks like much work it is in fact not, since this is only written once per application and
-the effort to support a new context data type is low.
+At any time the must be only one Contexter in the whole middleware stack and its the best
+to let it be the first middleware. Then you don't have to worry if its there or not.
 
-Lets have a look at the effort to support a new context type (here: error):
+The corresponding middleware stack would look like this
 
-1. Add a new field to your context (1 LOC)
+      // first check if the Contexter supports all context types needed by the middlewares
+      // this uses the ValidateContext() method of the middlewares that uses context.
+      // It panics on errors.
+      wrap.ValidateWrapperContexts(&MyContext{}, MyMiddleware{}, OtherMiddleware{})
 
-    // type context struct {
-    //  ...
-        err error
-    // }
+      stack := wrap.New(
+          MyContext{}, // injects the &MyContext{} wrapper, should be done at the beginning
+          MyMiddleware{},
+          OtherMiddleware{},
+          wrap.Handler(aHandler),
+      )
 
-2. Add a new case to retrieve the context data (5 LOC)
+      // stack is now a http.Handler
 
-    // func (c *context) Context(ctxPtr interface{}) (found bool) {
-    //  ...
-    //  switch ty := ctxPtr.(type) {
-    //  ...
-        case *error:
-          if c.err == nil {
-            return false
-          }
-          *ty = c.err
-    //  }
-    //  ...
-    // }
+If your application / handler also uses context data, it is a good idea to implement it as
+ContextWrapper as if it were a middleware and check it ValidateWrapperContexts too. So
+that you get nice panics if your context is wrong, before your server even starts.
 
-3. Add a new case to set the context data (3 LOC)
+If for some reason the original ResponseWriter is needed (to type assert it to a http.Flusher
+for example), it may be reclaimed with the help of ReclaimResponseWriter().
 
-    // func (c *context) SetContext(ctxPtr interface{}) {
-    //  ...
-    //  switch ty := ctxPtr.(type) {
-    //  ...
-        case *error:
-          c.err = *ty
-        }
-    //  ...
-    // }
-
-So 9 simple LOC to support a new context type is not that bad.
-
-A middleware using the error context could look like this:
-
-    var StopIfError wrap.NextHandlerFunc = func (next http.Handler, rw http.ResponseWriter, req *http.Request) {
-      var err error
-      if rw.(wrap.Contexter).Context(&err) {
-         rw.WriteHeader(500)
-
-         if os.Getenv("DEVELOPMENT") != "" {
-           fmt.Fprintf(rw, "Error:\n\n%s", err.Error())
-           return
-         }
-
-         fmt.Fprint(rw, "Internal server error")
-         return
-      }
-      next.ServeHTTP(rw,req)
-    }
+You might want to look at existing middlewares to get some ideas:
+http://godoc.org/github.com/go-on/wrap-contrib/wraps
 
 FAQ
 
-1. Why is the recommended way to use the Contexter interface to make a type assertion from
+1. Should the context not better be an argument to a middleware function, to make this
+dependency visible in documentation and tools?
+
+Answer: A unified interface gives great freedom when organizing and ordering middleware as the
+middleware in between does not have to know about a certain context type if does not care about it.
+It simply passes the ResponseWriter that happens to have context down the middleware stack chain.
+
+On the other hand, exposing the context type by making it a parameter has the effect that every middleware
+will need to pass this parameter to the next one if the next one needs it. Every middleware is then
+tightly coupled to the next one and reordering and mixing of middleware from different sources
+becomes impossible.
+
+However with the ContextHandler interface and the ValidateWrapperContexts function we have a way
+to guarantee that the requirements are met. And this solution is type safe, too.
+
+2. A ResponseWriter is an interface, because it may implement other interfaces from the http libary,
+e.g. http.Flusher. If it is wrapped that underlying implementation is not accessible anymore
+
+Answer: When the Contexter is validated, it is checked, that the Context method supports
+http.ResponseWriter as well (and that it returns the underlying ResponseWriter). Since only one
+Contexter may be used within a stack, it is always possible to ask the Contexter for the underlying
+ResponseWriter. This is what helper functions like ReclaimResponseWriter(), Flush(), CloseNotify()
+and Hijack() do.
+
+3. Why is the recommended way to use the Contexter interface to make a type assertion from
 the ResponseWriter to the Contexter interface without error handling?
 
 Answer: Middleware stacks should be created before the server is handling requests and then not change
@@ -290,7 +306,7 @@ stack or you inject the context to late or the context does not handle the kind 
 expects. In each case you should fix it early and the panic forces you to do.
 Use the DEBUG flag to see what's going on.
 
-2. What happens if my context is wrapped inside another context or response writer?
+4. What happens if my context is wrapped inside another context or response writer?
 
 Answer: You should only have one Contexter per application and inject it as first wrapper into your
 middleware stack. All context specific data belongs there. Having multiple Contexter in a stack is considered a bug.
@@ -301,10 +317,10 @@ everywhere inside your stack.
 Never should a context wrap another one. There also should be no need for another context wrapping
 ResponseWriter because every type can be saved by a Contexter with few code.
 
-All response writer wrappers of this package fulfill the Contexter interface and every response
+All response writer wrappers of this package implement the Contexter interface and every response
 writer you use should.
 
-3. Why isn't there any default context object? Why do I have to write it on my own?
+5. Why isn't there any default context object? Why do I have to write it on my own?
 
 Answer: To write your own context and context injection has several benefits:
 
@@ -313,17 +329,17 @@ Answer: To write your own context and context injection has several benefits:
   - context data may be generated/updated based on other context data
   - your context management is independant from the middleware
 
-4. Why is the context data accessed and stored via type switch and not by string keys?
+6. Why is the context data accessed and stored via type switch and not by string keys?
 
 Answer: Type based context allows a very simple implementation that namespaces across packages needs
 no extra memory allocation and is, well, type safe. If you need to store multiple context
 data of the same type, simple defined an alias type for each key.
 
-5. Is there an example how to integrate with 3rd party middleware libraries that expect context?
+7. Is there an example how to integrate with 3rd party middleware libraries that expect context?
 
 Answer: Yes, have a look at http://godoc.org/github.com/go-on/wrap-contrib/third-party.
 
-6. What about spawning goroutines / how does it relate to code.google.com/p/go.net/context?
+8. What about spawning goroutines / how does it relate to code.google.com/p/go.net/context?
 
 If you need your request to be handled by different goroutines and middlewares you might use
 your Contexter to store and provide access to a code.google.com/p/go.net/context Context just
