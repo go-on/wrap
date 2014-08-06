@@ -57,10 +57,9 @@ func (c *context) Context(ctxPtr interface{}) (found bool) {
 // Values are distiguished by their type, that means that SetContext replaces
 // and stored value of the same type.
 // A pointer type that is not supported results in a panic.
+// Supporting the replacement of the underlying response writer is not recommended.
 func (c *context) SetContext(ctxPtr interface{}) {
 	switch ty := ctxPtr.(type) {
-	case *http.ResponseWriter:
-		c.ResponseWriter = *ty
 	case *userIP:
 		c.userIP = *ty
 	case *error:
@@ -136,13 +135,16 @@ func (handleError) Wrap(next http.Handler) http.Handler {
 // app gets the userIP and writes it to the responsewriter. it requires  a context supporting the userIP
 type app struct{}
 
-// Wrap implements the wrap.Wrapper interface and writes a userIP from a context to the response writer
+// Wrap implements the wrap.Wrapper interface and writes a userIP from a context to the response writer, flushes
+// it and prints DONE
 func (app) Wrap(next http.Handler) http.Handler {
 	var f http.HandlerFunc
 	f = func(rw http.ResponseWriter, req *http.Request) {
 		var uIP userIP
 		rw.(Contexter).Context(&uIP)
-		fmt.Fprint(rw, net.IP(uIP).String())
+		fmt.Fprintln(rw, net.IP(uIP).String())
+		Flush(rw)
+		fmt.Fprint(rw, "DONE")
 	}
 	return f
 }
@@ -168,5 +170,5 @@ func ExampleContext() {
 	// Output:
 	// userip: "garbage" is not IP:port
 	// 127.0.0.1
-	//
+	// DONE
 }
