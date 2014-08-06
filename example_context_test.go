@@ -12,14 +12,15 @@ import (
 type userIP net.IP
 
 // context implements Contexter, providing a userIP and a error
+// also implements ContextInjecter to inject itself into the middleware chain
 type context struct {
 	http.ResponseWriter
 	userIP userIP
 	err    error
 }
 
-// make sure to fulfill the Contexter interface
-var _ Contexter = &context{}
+// make sure to fulfill the ContextInjecter interface
+var _ ContextInjecter = &context{}
 
 // context is an implementation for the Contexter interface.
 //
@@ -46,7 +47,7 @@ func (c *context) Context(ctxPtr interface{}) (found bool) {
 		}
 		*ty = c.err
 	default:
-		panic(fmt.Sprintf("unsupported context: %T", ctxPtr))
+		panic(&ErrUnsupportedContextGetter{ctxPtr})
 	}
 	return
 }
@@ -65,7 +66,7 @@ func (c *context) SetContext(ctxPtr interface{}) {
 	case *error:
 		c.err = *ty
 	default:
-		panic(fmt.Sprintf("unsupported context: %T", ctxPtr))
+		panic(&ErrUnsupportedContextSetter{ctxPtr})
 	}
 }
 
@@ -83,6 +84,18 @@ func (c context) Wrap(next http.Handler) http.Handler {
 
 // setUserIP is a middleware that requires a context supporting the userIP and the error type
 type setUserIP struct{}
+
+var _ ContextWrapper = setUserIP{}
+
+// ValidateContext makes sure that ctx supports the needed types
+func (setUserIP) ValidateContext(ctx Contexter) {
+	var userIP userIP
+	var err error
+	// since SetContext should panic for unsupported types,
+	// this should be enough
+	ctx.SetContext(&userIP)
+	ctx.SetContext(&err)
+}
 
 func (setUserIP) Wrap(next http.Handler) http.Handler {
 	var f http.HandlerFunc
@@ -114,6 +127,16 @@ func ipfromRequest(req *http.Request) (net.IP, error) {
 // it requires a context supporting the error type.
 type handleError struct{}
 
+var _ ContextWrapper = handleError{}
+
+// Validate makes sure that ctx supports the needed types
+func (handleError) ValidateContext(ctx Contexter) {
+	var err error
+	// since Context should panic for unsupported types,
+	// this should be enough
+	ctx.Context(&err)
+}
+
 // Wrap implements the wrap.Wrapper interface and checks for an error context.
 // If it finds one, the status 500 is set and the error is written to the response writer.
 // If no error is inside the context, the next handler is called.
@@ -135,6 +158,16 @@ func (handleError) Wrap(next http.Handler) http.Handler {
 // app gets the userIP and writes it to the responsewriter. it requires  a context supporting the userIP
 type app struct{}
 
+var _ ContextWrapper = app{}
+
+// Validate makes sure that ctx supports the needed types
+func (app) ValidateContext(ctx Contexter) {
+	var uIP userIP
+	// since Context should panic for unsupported types,
+	// this should be enough
+	ctx.Context(&uIP)
+}
+
 // Wrap implements the wrap.Wrapper interface and writes a userIP from a context to the response writer, flushes
 // it and prints DONE
 func (app) Wrap(next http.Handler) http.Handler {
@@ -150,8 +183,15 @@ func (app) Wrap(next http.Handler) http.Handler {
 }
 
 func ExampleContext() {
-	h := New(
-		context{}, // context must always be the first one
+	ctx := &context{}
+
+	// make sure, the context supports all types required by the used middleware
+	ValidateWrapperContexts(ctx, setUserIP{}, handleError{}, app{})
+
+	// Stack checks if context is valid (support http.ResponseWriter)
+	// and creates a top level middleware stack (for embedded ones use New())
+	h := Stack(
+		ctx, // context must always be the first one
 		setUserIP{},
 		handleError{},
 		app{},
