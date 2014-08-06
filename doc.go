@@ -114,10 +114,12 @@ If you need to run the next handler in order to inspect what it did,
 replace the response writer with a Peek (see NewPeek) or if you need
 full access to the written body with a Buffer.
 
-To use per request context a custom context type is needed that carries the context data.
+To use per request context a custom type is needed that carries the context data and
+the user is expected to create and inject a Contexter supporting this type.
+See the documentation of Contexter for more information.
 
 Then inside your f function type assert the response writer to a wrap.Contexter
-and use the SetContext and Context methods to store and retrieve your context.
+and use the SetContext and Context methods to store and retrieve your context data.
 Always pass a pointer of the context object to these methods.
 
 Don't forget to document that your middleware expects the response writer to
