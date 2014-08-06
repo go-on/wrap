@@ -1,6 +1,8 @@
 package wrap
 
 import (
+	"bufio"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -482,4 +484,176 @@ func TestEscapeHTMLResponseWriter(t *testing.T) {
 	if expected != got {
 		t.Errorf("expected: %#v, got %#v", expected, got)
 	}
+}
+
+type flushingRW struct {
+	http.ResponseWriter
+	flushed bool
+}
+
+func (f *flushingRW) Flush() {
+	f.flushed = true
+}
+
+func TestReclaimResponseWriter(t *testing.T) {
+	rw1 := &flushingRW{}
+	rw2 := &context{ResponseWriter: rw1}
+
+	res1 := ReclaimResponseWriter(rw1)
+
+	if _, ok := res1.(*flushingRW); !ok {
+		t.Errorf("must return the given response writer if that is not a Contexter, but does not")
+	}
+
+	res2 := ReclaimResponseWriter(rw2)
+
+	if _, ok := res2.(*flushingRW); !ok {
+		t.Errorf("must return the wrapped response writer if given a Contexter, but does not")
+	}
+}
+
+func TestFlush(t *testing.T) {
+	rw1 := &flushingRW{}
+
+	ok := Flush(rw1)
+
+	if !rw1.flushed {
+		t.Errorf("did not flush a http.Flusher")
+	}
+
+	if !ok {
+		t.Errorf("did not report the flush of a http.Flusher")
+	}
+
+	rw1 = &flushingRW{}
+	rw2 := &context{ResponseWriter: rw1}
+
+	ok = Flush(rw2)
+
+	if !rw1.flushed {
+		t.Errorf("did not flush a http.Flusher wrapped inside a Contexter")
+	}
+
+	if !ok {
+		t.Errorf("did not report the flush of a http.Flusher wrapped inside a Contexter")
+	}
+
+	rw1 = &flushingRW{}
+	rw2 = &context{ResponseWriter: &context{ResponseWriter: rw1}}
+
+	ok = Flush(rw2)
+
+	// not allowed nesting of Contexter (supporting it would be inefficient and lead to complicated and confusing coding style)
+	if rw1.flushed {
+		t.Errorf("must not flush a http.Flusher wrapped inside a Contexter that is inside another Contexter")
+	}
+
+	if ok {
+		t.Errorf("must not report the flush of a http.Flusher wrapped inside a Contexter that is inside another Contexter")
+	}
+
+}
+
+type hijackerRW struct {
+	http.ResponseWriter
+	hijacked bool
+}
+
+func (h *hijackerRW) Hijack() (c net.Conn, brw *bufio.ReadWriter, err error) {
+	h.hijacked = true
+	return
+}
+
+func TestHijack(t *testing.T) {
+	rw1 := &hijackerRW{}
+
+	_, _, _, ok := Hijack(rw1)
+
+	if !rw1.hijacked {
+		t.Errorf("did not hijack a http.Hijacker")
+	}
+
+	if !ok {
+		t.Errorf("did not report the hijack of a http.Hijacker")
+	}
+
+	rw1 = &hijackerRW{}
+	rw2 := &context{ResponseWriter: rw1}
+
+	_, _, _, ok = Hijack(rw2)
+
+	if !rw1.hijacked {
+		t.Errorf("did not hijack a http.Hijacker wrapped inside a Contexter")
+	}
+
+	if !ok {
+		t.Errorf("did not report the hijack of a http.Hijacker wrapped inside a Contexter")
+	}
+
+	rw1 = &hijackerRW{}
+	rw2 = &context{ResponseWriter: &context{ResponseWriter: rw1}}
+
+	_, _, _, ok = Hijack(rw2)
+
+	// not allowed nesting of Contexter (supporting it would be inefficient and lead to complicated and confusing coding style)
+	if rw1.hijacked {
+		t.Errorf("must not hijack a http.Hijacker wrapped inside a Contexter that is inside another Contexter")
+	}
+
+	if ok {
+		t.Errorf("must not report the hijack of a http.Hijacker wrapped inside a Contexter that is inside another Contexter")
+	}
+
+}
+
+type closeNotifyRW struct {
+	http.ResponseWriter
+	closeNotified bool
+}
+
+func (c *closeNotifyRW) CloseNotify() (ch <-chan bool) {
+	c.closeNotified = true
+	return
+}
+
+func TestCloseNotifier(t *testing.T) {
+	rw1 := &closeNotifyRW{}
+
+	_, ok := CloseNotify(rw1)
+
+	if !rw1.closeNotified {
+		t.Errorf("did not closenotify a http.CloseNotifier")
+	}
+
+	if !ok {
+		t.Errorf("did not report the closenotify of a http.CloseNotifier")
+	}
+
+	rw1 = &closeNotifyRW{}
+	rw2 := &context{ResponseWriter: rw1}
+
+	_, ok = CloseNotify(rw2)
+
+	if !rw1.closeNotified {
+		t.Errorf("did not closenotify a http.CloseNotifier wrapped inside a Contexter")
+	}
+
+	if !ok {
+		t.Errorf("did not report the closenotify of a http.CloseNotifier wrapped inside a Contexter")
+	}
+
+	rw1 = &closeNotifyRW{}
+	rw2 = &context{ResponseWriter: &context{ResponseWriter: rw1}}
+
+	_, ok = CloseNotify(rw2)
+
+	// not allowed nesting of Contexter (supporting it would be inefficient and lead to complicated and confusing coding style)
+	if rw1.closeNotified {
+		t.Errorf("must not closenotify a http.CloseNotifier wrapped inside a Contexter that is inside another Contexter")
+	}
+
+	if ok {
+		t.Errorf("must not report the closenotify of a http.CloseNotifier wrapped inside a Contexter that is inside another Contexter")
+	}
+
 }

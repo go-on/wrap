@@ -28,10 +28,13 @@ var _ Contexter = &context{}
 // Context sets the value of the given pointer to the value of the same type
 // that is stored inside of the context.
 // A pointer type that is not supported results in a panic.
+// *http.ResponseWriter should always be supported in order to get the underlying ResponseWriter
 // Context returns if the pointer is no nil pointer when returning.
 func (c *context) Context(ctxPtr interface{}) (found bool) {
 	found = true // save work
 	switch ty := ctxPtr.(type) {
+	case *http.ResponseWriter:
+		*ty = c.ResponseWriter
 	case *userIP:
 		if c.userIP == nil {
 			return false
@@ -56,6 +59,8 @@ func (c *context) Context(ctxPtr interface{}) (found bool) {
 // A pointer type that is not supported results in a panic.
 func (c *context) SetContext(ctxPtr interface{}) {
 	switch ty := ctxPtr.(type) {
+	case *http.ResponseWriter:
+		c.ResponseWriter = *ty
 	case *userIP:
 		c.userIP = *ty
 	case *error:
