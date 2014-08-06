@@ -21,7 +21,7 @@ type context struct {
 
 // make sure to fulfill the ContextInjecter interface
 var _ ContextInjecter = &context{}
-var _ ValidateContextInjecter(&context{})
+var _ = ValidateContextInjecter(&context{})
 
 // context is an implementation for the Contexter interface.
 //
