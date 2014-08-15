@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/go-on/wrap-contrib/helper"
+	"github.com/go-on/wrap-contrib/helper"
 )
 
 /*
@@ -325,11 +325,11 @@ func TestBufferContext(t *testing.T) {
 }
 
 func TestResponseBufferWriteTo(t *testing.T) {
-	rec, req := NewTestRequest("GET", "/")
+	rec, req := helper.NewTestRequest("GET", "/")
 	buf := NewBuffer(rec)
 	write("hi").ServeHTTP(buf, req)
 	buf.FlushAll()
-	err := AssertResponse(rec, "hi", 200)
+	err := helper.AssertResponse(rec, "hi", 200)
 	if err != nil {
 		t.Error(err)
 	}
@@ -337,7 +337,7 @@ func TestResponseBufferWriteTo(t *testing.T) {
 
 func TestResponseBufferReset(t *testing.T) {
 	buf := NewBuffer(nil)
-	_, req := NewTestRequest("GET", "/")
+	_, req := helper.NewTestRequest("GET", "/")
 	write("hi").ServeHTTP(buf, req)
 
 	buf.Reset()
@@ -360,11 +360,11 @@ func TestResponseBufferReset(t *testing.T) {
 }
 
 func TestResponseBufferWriteToStatus(t *testing.T) {
-	rec, req := NewTestRequest("GET", "/")
+	rec, req := helper.NewTestRequest("GET", "/")
 	buf := NewBuffer(rec)
 	http.NotFoundHandler().ServeHTTP(buf, req)
 	buf.FlushAll()
-	err := AssertResponse(rec, "404 page not found", 404)
+	err := helper.AssertResponse(rec, "404 page not found", 404)
 	if err != nil {
 		t.Error(err)
 	}
@@ -377,7 +377,7 @@ func TestResponseBufferWriteToStatus(t *testing.T) {
 func TestResponseBufferChanged(t *testing.T) {
 	buf2 := NewBuffer(nil)
 	buf1 := NewBuffer(buf2)
-	_, req := NewTestRequest("GET", "/")
+	_, req := helper.NewTestRequest("GET", "/")
 	write("hi").ServeHTTP(buf1, req)
 	buf1.FlushAll()
 
@@ -435,7 +435,7 @@ func TestResponseBufferChanged(t *testing.T) {
 func TestResponseBufferNotChanged(t *testing.T) {
 	buf1 := NewBuffer(nil)
 	buf2 := NewBuffer(nil)
-	_, req := NewTestRequest("GET", "/")
+	_, req := helper.NewTestRequest("GET", "/")
 	NoOp(buf1, req)
 	buf1.FlushAll()
 
@@ -462,7 +462,7 @@ func TestResponseBufferStatusCreate(t *testing.T) {
 	}
 
 	buf := NewBuffer(nil)
-	_, req := NewTestRequest("GET", "/")
+	_, req := helper.NewTestRequest("GET", "/")
 	writeCreate(buf, req)
 
 	if buf.Code != 201 {

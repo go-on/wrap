@@ -24,6 +24,8 @@ func (e ErrCodeFlushedBeforeHeaders) Error() string {
 	return "code flushed before headers"
 }
 
+// ErrUnsupportedContextSetter is the error returned if the context type is not supported by the SetContext()
+// method of a Contexter
 type ErrUnsupportedContextSetter struct {
 	Type interface{}
 }
@@ -32,6 +34,8 @@ func (e *ErrUnsupportedContextSetter) Error() string {
 	return fmt.Sprintf("setting the context type %T is not supported by the Contexter", e.Type)
 }
 
+// ErrUnsupportedContextGetter is the error returned if the context type is not supported by the Context()
+// method of a Contexter
 type ErrUnsupportedContextGetter struct {
 	Type interface{}
 }

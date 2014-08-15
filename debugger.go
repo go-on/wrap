@@ -39,12 +39,12 @@ type Debugger interface {
 
 // DEBUGGER is the Debugger used for debugging middleware stacks.
 // It defaults to a logging debugger that logs to os.Stdout
-var DEBUGGER Debugger = &logDebugger{log.New(os.Stdout, "[go-on/wrap debugger]", log.LstdFlags)}
+var DEBUGGER = Debugger(&logDebugger{log.New(os.Stdout, "[go-on/wrap debugger]", log.LstdFlags)})
 
 // DEBUG indicates if any stack should be debugged. Set it before any call to New.
 var DEBUG = false
 
-// SetDebug() provides a way to set DEBUG=true in a var declaration, like
+// SetDebug provides a way to set DEBUG=true in a var declaration, like
 //
 //   var _ = wrap.SetDebug()
 //
