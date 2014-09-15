@@ -169,7 +169,7 @@ that wants to use / share context.
        var f http.HandlerFunc
        f = func (rw http.ResponseWriter, req *http.Request) {
 
-          ctx := rw.(ctx.Contexter)
+          ctx := rw.(wrap.Contexter)
           m := MyContextData("Hello World")
           ctx.SetContext(&m) // always pass the pointer
 
