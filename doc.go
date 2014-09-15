@@ -232,11 +232,11 @@ Here is a template for an implementation of the Contexter interface
     }
 
     // Wrap implements the wrap.Wrapper interface by wrapping a ResponseWriter inside a new
-    // &Context and injecting it into the middleware chain.
+    // &MyContext and injecting it into the middleware chain.
     func (c MyContext) Wrap(next http.Handler) http.Handler {
       var f http.HandlerFunc
       f = func(rw http.ResponseWriter, req *http.Request) {
-        next.ServeHTTP(&context{ResponseWriter: rw}, req)
+        next.ServeHTTP(&MyContext{ResponseWriter: rw}, req)
       }
       return f
     }
