@@ -110,7 +110,7 @@ Then you could use the following template to implement the Wrapper interface
 
 	        // at some point you might want to run the next handler
 	        // if not, your middleware ends the stack chain
-	        next.ServeHTTP(rw http.ResponseWriter, req *http.Request)
+	        next.ServeHTTP(rw, req)
 	     }
 	     return f
     }
@@ -179,7 +179,7 @@ that wants to use / share context.
           // n now is MyContextData("Hello World")
 
           ... do stuff
-          next.ServeHTTP(rw http.ResponseWriter, req *http.Request)
+          next.ServeHTTP(rw, req)
        }
        return f
     }
