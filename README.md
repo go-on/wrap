@@ -3,7 +3,7 @@ wrap
 
 Package wrap creates a fast and flexible middleware stack for http.Handlers.
 
-[![Build Status](https://drone.io/github.com/go-on/wrap/status.png)](https://drone.io/github.com/go-on/wrap/latest) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master) [![Tutorial](http://img.shields.io/blog/tutorial.png?color=blue)](http://metakeule.github.io/article/wrap-go-middlware-framework.html) [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Total views](https://sourcegraph.com/api/repos/github.com/go-on/wrap/counters/views.png)](https://sourcegraph.com/github.com/go-on/wrap)
+[![Build Status](https://drone.io/github.com/go-on/wrap/status.png)](https://drone.io/github.com/go-on/wrap/latest) [![Coverage Status](https://img.shields.io/coveralls/go-on/wrap.svg)](https://coveralls.io/r/go-on/wrap?branch=master)  [![GoDoc](https://godoc.org/github.com/go-on/wrap?status.png)](http://godoc.org/github.com/go-on/wrap) [![Total views](https://sourcegraph.com/api/repos/github.com/go-on/wrap/counters/views.png)](https://sourcegraph.com/github.com/go-on/wrap)
 
 
 Features
@@ -21,8 +21,6 @@ Features
 
 How does it work
 ----------------
-
-A nice introduction into this library is [on my blog](http://metakeule.github.io/article/wrap-go-middlware-framework.html).
 
 `wrap.New(w ...Wrapper)` creates a stack of middlewares. `Wrapper` is defined as
 
