@@ -227,7 +227,7 @@ Here is a template for an implementation of the Contexter interface
         c.myContextData = ty
       default:
         // always panic with wrap.ErrUnsupportedContextSetter in SetContext method on default
-        panic(&ErrUnsupportedContextSetter{ctxPtr})
+        panic(&wrap.ErrUnsupportedContextSetter{ctxPtr})
       }
     }
 
