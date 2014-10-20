@@ -31,6 +31,27 @@ func (w times) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func benchmark(h http.Handler, b *testing.B) {
+	wr, req := mkRequestResponse()
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		h.ServeHTTP(wr, req)
+	}
+}
+
+func benchmarkWrapper(n int, b *testing.B) {
+	b.StopTimer()
+	h := mkWrap(n)
+	benchmark(h, b)
+}
+
+func benchmarkSimple(n int, b *testing.B) {
+	b.StopTimer()
+	h := times(n)
+	benchmark(h, b)
+}
+
 func BenchmarkWrapping(b *testing.B) {
 	b.StopTimer()
 	wrappers := make([]Wrapper, b.N)
@@ -43,62 +64,25 @@ func BenchmarkWrapping(b *testing.B) {
 }
 
 func BenchmarkServing100Simple(b *testing.B) {
-	b.StopTimer()
-	h := times(100)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkSimple(100, b)
 }
 
 func BenchmarkServing100Wrappers(b *testing.B) {
-	b.StopTimer()
-	h := mkWrap(100)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkWrapper(100, b)
 }
 
 func BenchmarkServing50Wrappers(b *testing.B) {
-	b.StopTimer()
-	h := mkWrap(50)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkWrapper(50, b)
 }
 
 func BenchmarkServing50Simple(b *testing.B) {
-	b.StopTimer()
-	h := times(50)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkSimple(50, b)
 }
 
 func BenchmarkServing2Wrappers(b *testing.B) {
-	b.StopTimer()
-	h := mkWrap(2)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkWrapper(2, b)
 }
 
 func BenchmarkServing2Simple(b *testing.B) {
-	b.StopTimer()
-	h := times(2)
-	wr, req := mkRequestResponse()
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		h.ServeHTTP(wr, req)
-	}
+	benchmarkSimple(2, b)
 }
