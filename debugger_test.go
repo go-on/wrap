@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	// "github.com/go-on/wrap"
+	// "gopkg.in/go-on/wrap.v2"
 )
 
 func TestDebug(t *testing.T) {
