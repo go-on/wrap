@@ -22,6 +22,8 @@ Features
 How does it work
 ----------------
 
+Import it via gopkg.in: `import "gopkg.in/go-on/wrap.v2"`.
+
 `wrap.New(w ...Wrapper)` creates a stack of middlewares. `Wrapper` is defined as
 
     type Wrapper interface {
