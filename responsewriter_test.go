@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"gopkg.in/go-on/wrap-contrib.v2/helper"
+	"github.com/go-on/wrap-contrib/helper"
 )
 
 /*
