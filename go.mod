@@ -1,1 +1,1 @@
-module github.com/go-on/wrap
+module github.com/go-on/wrap/v2
